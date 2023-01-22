@@ -1,0 +1,72 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="./assets/css/normalize.css" />
+    <link rel="stylesheet" href="./assets/css/layout.css" />
+    <style>
+      .game-list{padding: 10px; box-sizing: border-box;}
+      .user-info{
+        border-radius: 8px; padding: 10px; box-sizing: border-box; display: flex; align-items: center;
+        background: #eee; margin-bottom: 10px;
+      }
+      .thumbnail{border-radius: 8px; width: 50px;}
+      .thumbnail img{vertical-align: top; border-radius: 8px;}
+      .nickname{padding: 0 10px; flex: 1; box-sizing: border-box;}
+      header{background: #decade; padding: 10px; box-sizing: border-box;}
+      header h2{margin: 0;}
+      .user-info .btns button{outline: 0; background: 0; border: 0; padding: 0;}
+    
+      fieldset{border-radius: 8px; background: #eee; border: 0; padding: 10px; margin: 0; border-top: 1px solid #ccc;}
+      legend h2{margin: 0;}
+      ul{margin: 0; /*padding-left: 18px;*/ padding: 0;}
+      ul li{padding: 10px 0; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; justify-content: space-between;}
+      ul li:hover{background: radial-gradient(rgba(255, 255, 255, .8), transparent);}
+      ul a{text-decoration: 0; color: #000; flex: 1; margin-right: 10px;}
+      ul .btns{display: flex; flex-direction: column; align-items: cener;}
+      ul button{margin: 0; padding: 5px; border: 0; outline: 0; background: #fff; margin-bottom: 5px; border-radius: 8px; width: 80px;}
+      ul li button:last-child{margin-bottom: 0;}
+    </style>
+  </head>
+  <body>
+    <div>
+      <header>
+        <h2>R. Temp. Game</h2>
+      </header>
+      <div class="game-list">
+        <div id="userInfo" class="user-info">
+          <div id="thumbnail" class="thumbnail"><img width="50" /></div>
+          <div id="nickname" class="nickname txt-overflow1">광광광광광광광광광광광광광광광광광광광광</div>
+          <div class="btns">
+            <button><img src="../assets/img/edit.svg" width="30"></button>
+          </div>
+        </div>
+        <fieldset>
+          <legend><h2>게임 리스트</h2></legend>
+          <ul>
+            <li>
+              <router-link to="/color-quiz" class="txt-overflow1">군계일학 feat.coloR</router-link>
+              <div class="btns">
+                <button>랭킹</button>
+                <button>플레이</button>
+              </div>
+              </li>
+            <li></li>
+          </ul>
+        </fieldset>
+      </div>
+    </div>
+    <script src="./assets/js/common.js"></script>
+    <script>
+      const userInfo = commonJs.userInfo();
+      const accessKey = sessionStorage.accessKey;
+
+      if(!userInfo.id || accessKey != 'n.rmal'){
+        alert('잘못된 접근입니다');
+        window.location.href = 'login.html';
+      }
+
+      const userInfoUI = qs('#userInfo');
+      userInfoUI.querySelector('#nickname').innerHTML = userInfo.nick;
+      userInfoUI.querySelector('#thumbnail img').src = userInfo.thumbnail;
+    </script>
+  </body>
+</html>

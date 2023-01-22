@@ -1,0 +1,81 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="./assets/css/normalize.css" />
+    <link rel="stylesheet" href="./assets/css/layout.css" />
+
+    <style scoped>
+      .login-page{height: 100%; background: linear-gradient(#000, #decade);}
+      .logo{
+        margin: 0; padding: 0; color: rgba(255, 255, 255, .8); position: fixed; top: 50px; left: 50%; transform: translateX(-50%);
+        width: 100%; text-align: center; text-shadow: 0 0 25px #fff;
+      }
+      .main-img{text-align: center; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);}
+      .btns .start-game{
+        display: inline-block; padding: 15px; background: #ace; box-sizing: border-box; border-radius: 8px;
+        width: 100%; color: #fff; text-decoration: none;
+      }
+      footer{text-align: center; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);}
+      footer p{font-size: 12px; word-break: keep-all;}
+      footer .login-text{color: #f00;}
+      footer .welcom-text span{font-weight: 900;}
+    </style>
+  </head>
+  <body>
+    <div class="login-page">
+      <h1 id="logo" class="logo">R. temp. Games</h1>
+      <div class="main-img">
+      </div>
+      <footer>
+        <div class="btns">
+          <a id="kakao-login-btn"></a>
+        </div>
+        <p>
+          <span class="login-text">로그인이 필요한 서비스입니다.</span>
+        </p>
+      </footer>
+    </div>
+
+    <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+    <script src="./assets/js/common.js"></script>
+    <script>
+    
+      const t = this;
+      const userInfo = commonJs.userInfo();
+
+      console.log(userInfo);
+
+      if(userInfo.id){
+        commonJs.setAccessKey();
+        window.location = 'gameList.html';
+      }
+
+      kakaoLogin();
+  
+      function kakaoLogin(){
+        Kakao.init('e14b339e334e3a9bb5d3a6b66a9859fa');
+    
+        Kakao.Auth.createLoginButton({
+          container: '#kakao-login-btn',
+          success: function() {
+            Kakao.API.request({
+              url: '/v2/user/me',	
+            success: function(result) {
+              const args = {
+                id: result.id,
+                nick: result.properties.nickname,
+                thumbnail: result.properties.thumbnail_image,
+              }
+              localStorage.kakaoLogin = JSON.stringify(args);
+            },
+            fail: function() {},
+            })
+          },
+          fail: function(err) {
+            console.log(err)
+          },
+        })
+      }
+    </script>
+  </body>
+</html>
+
