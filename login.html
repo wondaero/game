@@ -1,9 +1,12 @@
 <html>
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>로그인 페이지</title>
     <link rel="stylesheet" href="./assets/css/normalize.css" />
     <link rel="stylesheet" href="./assets/css/layout.css" />
 
-    <style scoped>
+    <style>
       .login-page{height: 100%; background: linear-gradient(#000, #decade);}
       .logo{
         margin: 0; padding: 0; color: rgba(255, 255, 255, .8); position: fixed; top: 50px; left: 50%; transform: translateX(-50%);
@@ -22,7 +25,7 @@
   </head>
   <body>
     <div class="login-page">
-      <h1 id="logo" class="logo">R. temp. Games</h1>
+      <h1 id="logo" class="logo">R. temp. Game</h1>
       <div class="main-img">
       </div>
       <footer>
@@ -44,7 +47,7 @@
 
       console.log(userInfo);
 
-      if(userInfo.id){
+      if(typeof userInfo == 'object' && userInfo.id){
         commonJs.setAccessKey();
         window.location = 'gameList.html';
       }
