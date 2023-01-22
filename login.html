@@ -69,6 +69,8 @@
                 thumbnail: result.properties.thumbnail_image,
               }
               localStorage.kakaoLogin = JSON.stringify(args);
+              commonJs.setAccessKey();
+              window.location = 'gameList.html';
             },
             fail: function() {},
             })
