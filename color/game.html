@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>군계일학 feat.coloR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../assets/css/normalize.css">
+</head>
+<style>
+    html.dark, body.dark{background: #000; color: #fff;}
+
+    body{display: flex; align-items: center; justify-content: center;}
+    .wrapper{width: 280px;}
+
+    header{padding: 10px; text-align: right;}
+    header button{outline: 0; border: 0; border-radius: 3px; width: 60px; padding: 5px; box-sizing: border-box; color: #fff; font-weight: 900;}
+    header button{display: inline-flex; align-items: center; justify-content: center;}
+    .home{background: green;}
+    .start{background: blue;}
+
+    .content{position: relative;}
+    .content h3{margin: 0; margin-bottom: 10px; padding: 0 10px;}
+
+
+    .colors{display: none; align-items: center; justify-content: center; flex-wrap: wrap; width: 280px;}
+    .colors.on{display: flex;}
+    .colors > div{
+        width: 48px; height:48px; margin-right: 5px; border-radius: 50%; margin-bottom: 5px; cursor: pointer;
+        position: relative;
+    }
+    .colors > div:nth-child(5n){margin-right: 0;}
+    .colors > div:nth-child(n + 21){margin-bottom: 0;}
+
+    .colors > div:after{
+        content: ''; position: absolute; top: 0; right: 0; width: 8px; height: 8px; background: linear-gradient(#f00, brown);
+        border-radius: 50%; box-shadow: 0 0 5px rgba(255, 255, 255, .5); transform: scale(0); transition: transform .5s cubic-bezier(1, 0.99, 0, 2.15);
+    }
+    .colors > div.correct:after{
+        transform: scale(1);
+    }
+    
+
+    aside{position: absolute; top: 0; left: 0; right: 0; background: 0; display: none; justify-content: center; padding-top: 320px;}
+    aside.on{display: flex;}
+
+    aside > div{width: 280px; text-align: center; }
+    aside h2{display: none; margin: 0; margin-bottom: 5px;}
+    aside h2.on{display: block;}
+    aside h3, aside h4{margin: 0; margin-bottom: 5px;}
+    aside h4{margin-bottom: 20px;}
+    
+    aside .color-history{display: flex; align-items: center; justify-content: center;}
+    /* aside .dots{position: relative; top: 15px;} */
+    aside .dots .dot{width: 5px; height: 5px; border-radius: 50%; display: inline-block; margin-right: 2px;}
+    aside .token{position: relative; height: 50px; width: 50px;}
+    aside .token > div{width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;}
+    aside .token > div > div{
+        width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900;
+        text-shadow: 0 0 0px rgba(0, 0, 0, .5);
+    }
+
+</style>
+<body>
+    <div class="wrapper">
+        <header>
+            <button class="home" onclick="colorGame.goHome();">홈</button>
+            <button class="start" onclick="colorGame.startGame();">시작</button>
+        </header>
+        <div class="content">
+            <h3 class=""><span id="qIdx">1.</span> <span id="guide">시작버튼을 눌러주세요.</span></h3>
+    
+            <div id="colors" class="colors">
+                <div onclick="colorGame.answer(0)"></div>
+                <div onclick="colorGame.answer(1)"></div>
+                <div onclick="colorGame.answer(2)"></div>
+                <div onclick="colorGame.answer(3)"></div>
+                <div onclick="colorGame.answer(4)"></div>
+                <div onclick="colorGame.answer(5)"></div>
+                <div onclick="colorGame.answer(6)"></div>
+                <div onclick="colorGame.answer(7)"></div>
+                <div onclick="colorGame.answer(8)"></div>
+                <div onclick="colorGame.answer(9)"></div>
+                <div onclick="colorGame.answer(10)"></div>
+                <div onclick="colorGame.answer(11)"></div>
+                <div onclick="colorGame.answer(12)"></div>
+                <div onclick="colorGame.answer(13)"></div>
+                <div onclick="colorGame.answer(14)"></div>
+                <div onclick="colorGame.answer(15)"></div>
+                <div onclick="colorGame.answer(16)"></div>
+                <div onclick="colorGame.answer(17)"></div>
+                <div onclick="colorGame.answer(18)"></div>
+                <div onclick="colorGame.answer(19)"></div>
+                <div onclick="colorGame.answer(20)"></div>
+                <div onclick="colorGame.answer(21)"></div>
+                <div onclick="colorGame.answer(22)"></div>
+                <div onclick="colorGame.answer(23)"></div>
+                <div onclick="colorGame.answer(24)"></div>
+            </div>
+
+            <aside>
+                <div>
+                    <h2 id="colorMaster">당신이 군계일학!</h2>
+                    <h3 id="mode_ver">모드 ver.</h3>
+                    <h4>소요시간: <span id="dur"></span></h4>
+                    <div id="colorHistory" class="color-history">
+                        <div id="dots" class="dots"></div>
+                        <div id="token" class="token"></div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+
+    <script src="../assets/js/common.js"></script>
+    <script>
+        if(!commonJs.isAccess()){
+            alert('잘못된 접근입니다.');
+            window.location.href = '../login.html';
+        }
+
+        const strQry = location.search.substr(1);
+        const qryArr = strQry.split('&');
+        const qryObj = {};
+        qryArr.forEach(function(qry){
+            const qry2arr = qry.split('=');
+            qryObj[qry2arr[0]] = qry2arr[1];
+        });
+
+        function isValidPage(){
+            let mode = false;
+            let ver = false;
+
+            if(qryObj.mode === 'dark' || qryObj.mode === 'light') mode = true;
+            if(qryObj.ver === '1' || qryObj.ver === '2' || qryObj.ver === '3') ver = true;
+
+            return (mode && ver);
+        }
+
+        if(!isValidPage(qryObj)){
+            alert('잘못된 접근입니다.');
+            location.href = './index.html';
+        }
+
+        
+
+        qs('body').classList.add(qryObj.mode);
+        
+        const colorGame = new Color();
+
+        colorGame.mode = qryObj.mode;
+        colorGame.ver = qryObj.ver;
+
+        function Color(){
+            const t = this;
+
+            t.gameId;
+            t.start = false;
+            t.end = false;
+            t.quizIdx = 0;
+            t.otherColorIdx = 0;
+            t.r = t.g = t.b = '';
+            t.stop = false;
+
+            t.mode = '';
+            t.ver = '';
+
+            t.history = [];
+
+            t.stage = 30;
+
+            t.startGame = function(){
+                // if(t.start !== false && keep === undefined) return;
+                if(t.start) return;
+                if(t.stop)
+                    if(!confirm('재시작 할까요?')) return;
+
+                t.init();
+
+                const userInfo = commonJs.userInfo();
+
+                t.start = true;
+
+                ajaxPost({
+                    url:'https://wondaero.gabia.io/startColorGame',
+                    data: {
+                        id: userInfo.id,
+                        mode: t.mode
+                    },
+                    success: function(res){
+                        const res2 = JSON.parse(res);
+                        t.gameId = res2.insertId;
+                        t.ing();
+                    },
+                    error: function(){
+                        alert('관리자에게 문의하세요.');
+                    }
+                });
+            }
+
+            t.ing = function(){
+                qs('#colors').classList.add('on');
+                qs('#guide').innerText = '이 중 다른 색을 찾아주세요.';
+
+                let mnColor = 50;
+                let mxColor = 200;
+                
+                if(t.mode == 'light'){
+                    mnColor = 5;
+                    mxColor = 250;
+                }
+                
+                t.r = getRandomNum((mnColor + t.stage), (mxColor - t.stage));
+                t.g = getRandomNum((mnColor + t.stage), (mxColor - t.stage));
+                t.b = getRandomNum((mnColor + t.stage), (mxColor - t.stage));
+
+                const qIdx = qs('#qIdx');
+                const colors = qs('#colors');
+
+                qIdx.innerText = (t.quizIdx + 1) + '.';
+
+                colors.querySelectorAll('div').forEach(function(color){
+                    color.style.background = setColor(t.r, t.g, t.b);
+                });
+
+                t.otherColorIdx = getRandomNum(0, 24);  //컬러갯수
+
+                colors.querySelectorAll('div')[t.otherColorIdx].style.background = setOtherColor([t.r, t.g, t.b], (t.stage - t.quizIdx), t.ver);
+            }
+
+            t.answer = function(idx){
+                if(t.stop === true) return;
+
+                const colors = qs('#colors');
+
+                if(idx == t.otherColorIdx || idx == 'hack'){
+                    t.history.push({
+                        color1: setColor(t.r, t.g, t.b),
+                        color2: colors.querySelectorAll('div')[t.otherColorIdx].style.background,
+                    });
+
+                    ajaxPost({
+                        url:'https://wondaero.gabia.io/nextColorStage',
+                        data: {
+                            gameId: t.gameId,
+                            mode: t.mode,
+                            stage: t.quizIdx + 1
+                        },
+                        success: function(res){
+                            console.log(t.quizIdx);
+                            if(t.quizIdx == (t.stage - 1)){    //30문제 다 풀음
+                                t.result(true);
+                            }else{
+                                t.quizIdx++;
+                                t.ing();
+                            }
+                        },
+                        error: function(){
+                            alert('관리자에게 문의하세요.');
+                        }
+                    });
+                }else{
+                    t.result();
+                }
+            }
+
+            t.result = function(isEnd){
+                t.stop = true;
+                t.start = false;
+
+                ajaxPost({
+                    url:'https://wondaero.gabia.io/getColorGameInfo',
+                    data: {gameId: t.gameId, mode: t.mode},
+                    success: function(res){
+                        const res2 = JSON.parse(res)[0];
+
+                        console.log(res2);
+                        if(isEnd) qs('#colorMaster').classList.add('on');
+
+                        colors.querySelectorAll('div')[t.otherColorIdx].classList.add('correct');
+
+                        qs('aside').classList.add('on');
+                        qs('#mode_ver').innerText = (t.mode == 'light' ? '라이트' : '다크') + '모드'; 
+                        qs('#dur').innerText = res2.stage > 0 ? ((res2.time1 - res2.time0) / 1000) + '초' : '없음';
+
+                        qs('#token').innerHTML = '';
+                        qs('#dots').innerHTML = '';
+                        
+                        t.history.forEach(function(el, idx){
+                            if(idx == t.history.length - 1){
+                                const div = document.createElement('div');
+                                const div2 = document.createElement('div');
+                                div.style.cssText = 'background: linear-gradient(-45deg, ' + el.color1 + ', #fff);';
+                                div2.style.cssText = 'background: linear-gradient(135deg, ' + el.color1 + ', #fff); color: ' + el.color2 + ';';
+                                div2.innerHTML = (idx + 1);
+                                div.appendChild(div2);
+                                qs('#token').appendChild(div);
+                            }else{
+                                const div = document.createElement('div');
+                                div.style.background = el.color1;
+                                div.classList.add('dot');
+                                qs('#dots').appendChild(div);
+                            }
+                        });
+                    },
+                    error: function(){
+                        alert('관리자에게 문의하세요.');
+                    }
+                });
+            }
+
+            t.init = function(){
+                colors.querySelectorAll('div')[t.otherColorIdx].classList.remove('correct');
+                qs('aside').classList.remove('on');
+                qs('#colors').classList.add('on');
+                qs('#colorMaster').classList.remove('on')
+
+                t.start = t.end = t.stop = false;
+                t.otherColorIdx = t.quizIdx = 0;
+                t.r = t.g = t.b = '';
+                t.history = [];
+            }
+
+            t.goHome = function(){
+                if(confirm('초기화면으로 돌아갈까요?')) location.href = './index.html';
+            }
+        }
+
+        function setOtherColor(arr, val, ver){
+            const valArr = [-val, val];
+            const addVal = valArr[getRandomNum(0, 1)];
+
+            const exColor = getRandomNum(0, 2);
+
+            for(let i = 0; i < arr.length; i++){
+                if(ver == 1){ 
+                    arr[i] += addVal;
+                }else if(ver == 2){
+                    if(exColor != i) arr[i] += addVal;
+                }else if(ver == 3){
+                    if(exColor == i) arr[i] += addVal;
+                }
+            }
+
+            return 'rgb(' + arr.join(',') + ')';
+        }
+
+        function setColor(r, g, b){return 'rgb(' + r + ', ' + g + ', ' + b + ')';}
+
+    </script>
+</body>
+</html>

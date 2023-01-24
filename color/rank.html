@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>color Rank</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../assets/css/normalize.css">
+    <link rel="stylesheet" href="../assets/css/layout.css" />
+</head>
+<style>
+    header{padding: 10px; background: #000;}
+    .header-top{
+        display: flex; align-items: center; justify-content: space-between; border-bottom: 1px dashed rgba(255, 255, 255, .5);
+        padding-bottom: 5px; margin-bottom: 5px;
+    }
+    .title{color: #fff; margin: 0; font-size: 25px;}
+    .btn-home, .btn-rank{
+        outline: 0; border: 0; border-radius: 3px; width: 60px; padding: 5px; box-sizing: border-box; color: #fff; font-weight: 900;
+        display: inline-flex; align-items: center; justify-content: center; text-decoration: none; background: green;
+    }
+    .btn-rank{background: #00f;}
+
+    .header-bottom{
+        display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .header-bottom select{padding: 10px 5px;}
+
+</style>
+<body>
+    <div class="wrapper">
+        <header>
+            <div class="header-top">
+                <h1 class="title">군계일학 랭킹</h1>
+                <a href="/index.html" class="btn-home">홈</a>
+            </div>
+            <div class="header-bottom">
+                <div>
+                    <select id="mode">
+                        <option value="light">라이트모드</option>
+                        <option value="dark">다크모드</option>
+                    </select>
+                    <select id="type">
+                        <option value="all">전체</option>
+                        <option value="friend">친구</option>
+                    </select>
+                </div>
+                <button class="btn-rank">랭킹!</button>
+            </div>
+        </header>
+
+    </div>
+
+    <script src="../assets/js/common.js"></script>
+    <script>
+        
+        if(!commonJs.isAccess()){
+            alert('잘못된 접근입니다.');
+            window.location.href = '../login.html';
+        }
+        
+        const userInfo = commonJs.userInfo();
+    </script>
+</body>
+</html>

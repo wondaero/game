@@ -1,6 +1,7 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
     <title>게임리스트</title>
     <link rel="stylesheet" href="./assets/css/normalize.css" />
@@ -21,13 +22,15 @@
     
       fieldset{border-radius: 8px; background: #eee; border: 0; padding: 10px; margin: 0; border-top: 1px solid #ccc;}
       legend h2{margin: 0;}
-      ul{margin: 0; /*padding-left: 18px;*/ padding: 0;}
-      ul li{padding: 10px 0; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; justify-content: space-between;}
-      ul li:hover{background: radial-gradient(rgba(255, 255, 255, .8), transparent);}
-      ul a{text-decoration: 0; color: #000; flex: 1; margin-right: 10px;}
-      ul .btns{display: flex; flex-direction: column; align-items: cener;}
-      ul button{margin: 0; padding: 5px; border: 0; outline: 0; background: #fff; margin-bottom: 5px; border-radius: 8px; width: 80px;}
-      ul li button:last-child{margin-bottom: 0;}
+      ul.game-list{margin: 0; /*padding-left: 18px;*/ padding: 0;}
+      ul.game-list li{padding: 10px 0; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; justify-content: space-between;}
+      ul.game-list li:hover{background: radial-gradient(rgba(255, 255, 255, .8), transparent);}
+      ul.game-list a{
+        text-decoration: 0; color: #000; margin: 0; padding: 5px; border: 0; outline: 0;
+        background: #fff; border-radius: 8px; width: 60px; display: inline-block; text-align: center;
+      }
+      ul.game-list .btns{display: flex; flex-direction: column; align-items: cener;}
+      ul.game-list li button:last-child{margin-bottom: 0;}
     </style>
   </head>
   <body>
@@ -38,19 +41,18 @@
       <div class="game-list">
         <div id="userInfo" class="user-info">
           <div id="thumbnail" class="thumbnail"><img width="50" /></div>
-          <div id="nickname" class="nickname txt-overflow1">최대글자수는스무자인것같습니다참고하세요</div>
-          <div class="btns">
+          <div id="nickname" class="nickname txt-overflow1">닉네임(최대20글자)</div>
+          <!-- <div class="btns">
             <button><img src="../assets/img/edit.svg" width="30"></button>
-          </div>
+          </div> -->
         </div>
         <fieldset>
           <legend><h2>게임 리스트</h2></legend>
-          <ul>
+          <ul class="game-list">
             <li>
-              <router-link to="/color-quiz" class="txt-overflow1">군계일학 feat.coloR</router-link>
+              <div>군계일학 feat.coloR</div>
               <div class="btns">
-                <button>랭킹</button>
-                <button>플레이</button>
+                <a href="color/index.html">PLAY</a>
               </div>
               </li>
             <li></li>
@@ -61,10 +63,9 @@
     <script src="./assets/js/common.js"></script>
     <script>
       const userInfo = commonJs.userInfo();
-      const accessKey = sessionStorage.accessKey;
 
-      if(!userInfo.id || accessKey != 'n.rmal'){
-        alert('잘못된 접근입니다');
+      if(!commonJs.isAccess()){
+        alert('잘못된 접근입니다.');
         window.location.href = 'login.html';
       }
 

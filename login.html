@@ -1,6 +1,7 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
     <title>로그인 페이지</title>
     <link rel="stylesheet" href="./assets/css/normalize.css" />
@@ -41,11 +42,7 @@
     <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
     <script src="./assets/js/common.js"></script>
     <script>
-    
-      const t = this;
       const userInfo = commonJs.userInfo();
-
-      console.log(userInfo);
 
       if(typeof userInfo == 'object' && userInfo.id){
         commonJs.setAccessKey();
@@ -62,17 +59,31 @@
           success: function() {
             Kakao.API.request({
               url: '/v2/user/me',	
-            success: function(result) {
-              const args = {
-                id: result.id,
-                nick: result.properties.nickname,
-                thumbnail: result.properties.thumbnail_image,
-              }
-              localStorage.kakaoLogin = JSON.stringify(args);
-              commonJs.setAccessKey();
-              window.location = 'gameList.html';
-            },
-            fail: function() {},
+              success: function(result) {
+
+                console.log(result);
+
+                const args = {
+                  id: result.id,
+                  nick: result.properties.nickname,
+                  thumbnail: result.properties.thumbnail_image,
+                }
+
+                ajaxPost({
+                  url:'https://wondaero.gabia.io/addUser',
+                  data: args,
+                  success: function(res){
+                    localStorage.kakaoLogin = JSON.stringify(args);
+                    commonJs.setAccessKey();
+                    window.location = 'gameList.html';
+                  },
+                  error: function(){
+                    alert('관리자에게 문의하세요.');
+                  }
+                })
+
+              },
+              fail: function() {},
             })
           },
           fail: function(err) {
