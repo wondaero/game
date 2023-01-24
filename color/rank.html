@@ -26,8 +26,9 @@
 
     .header-bottom select{padding: 10px 5px;}
 
-    .user-list{list-style: none; margin: 0; margin-top: 110px; padding: 0 10px;}
-    .user-list li{border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 5px; display: flex; align-items: center;}
+    .user-list{list-style: none; margin: 0; margin-top: 110px; padding: 0; width: 100%;}
+    .user-list li{border-bottom: 1px solid #eee; padding: 10px 5px; display: flex; align-items: center;}
+    .user-list li.me{background: #ccc;}
 
     .game-info{width: 0; flex: 1;}
     .places{width: 50px; text-align: center; margin-right: 5px; font-weight: 900;}
@@ -89,6 +90,7 @@
                     userList.innerHTML = '';
                     const res2 = JSON.parse(res);
                     console.log(res2);
+                    console.log(userInfo);
                     res2.forEach(function(user, idx){
                         const li = document.createElement('li');
 
@@ -96,13 +98,15 @@
                             <div class="places place${idx + 1}">${idx + 1}등</div>
                             <img class="thumbnail" src="${user.kakao_thumbnail}"  width="50" />
                             <div class="game-info">
-                                <div class="nick txt-overflow1">${user.kakao_nick}</div>
+                                <div class="nick txt-overflow1">${userInfo.id == user.id ? user.kakao_nick : 'user' + (idx + 1)}</div>
                                 <div class="rec">
                                     <span class="stage">Stage.${user.max_stage}</span>
                                     <span class="sec">${user.min_rec}초</span>
                                 </div>
                             </div>
                         `;
+
+                        if(userInfo.id == user.id) li.classList.add('me');
 
                         li.innerHTML = html;
 
