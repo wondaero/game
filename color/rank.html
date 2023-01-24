@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="../assets/css/layout.css" />
 </head>
 <style>
-    header{padding: 10px; background: #000;}
+    header{padding: 10px; background: #000; position: fixed; top: 0; left: 0; right: 0;}
     .header-top{
         display: flex; align-items: center; justify-content: space-between; border-bottom: 1px dashed rgba(255, 255, 255, .5);
         padding-bottom: 5px; margin-bottom: 5px;
@@ -26,13 +26,28 @@
 
     .header-bottom select{padding: 10px 5px;}
 
+    .user-list{list-style: none; margin: 0; margin-top: 110px; padding: 0 10px;}
+    .user-list li{border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 5px; display: flex; align-items: center;}
+
+    .game-info{width: 0; flex: 1;}
+    .places{width: 50px; text-align: center; margin-right: 5px; font-weight: 900;}
+    .place1{font-size: 30px;}
+    .place2{font-size: 24px;}
+    .place3{font-size: 20px;}
+
+    .thumbnail{border-radius: 8px; margin-right: 5px;}
+    .nick{font-weight: 600; margin-bottom: 10px;}
+    .rec{font-weight: 600;}
+    .stage{width: 70px; display: inline-block; background: linear-gradient(transparent, 50%, #ff0 0);}
+    .sec{background: linear-gradient(transparent, 50%, #0f0 0);}
+
 </style>
 <body>
     <div class="wrapper">
         <header>
             <div class="header-top">
                 <h1 class="title">군계일학 랭킹</h1>
-                <a href="/index.html" class="btn-home">홈</a>
+                <a href="./index.html" class="btn-home">홈</a>
             </div>
             <div class="header-bottom">
                 <div>
@@ -42,12 +57,13 @@
                     </select>
                     <select id="type">
                         <option value="all">전체</option>
-                        <option value="friend">친구</option>
+                        <!-- <option value="friend">친구</option> -->
                     </select>
                 </div>
-                <button class="btn-rank">랭킹!</button>
+                <button class="btn-rank" onclick="getColorRank();">랭킹!</button>
             </div>
         </header>
+        <ul id="userList" class="user-list"></ul>
 
     </div>
 
@@ -60,6 +76,45 @@
         }
         
         const userInfo = commonJs.userInfo();
+
+        function getColorRank(){
+            ajaxPost({
+                url:'https://wondaero.gabia.io/getColorRank',
+                data: {
+                    id: userInfo.id,
+                    mode: qs('#mode').value
+                },
+                success: function(res){
+                    const userList = qs('#userList');
+                    userList.innerHTML = '';
+                    const res2 = JSON.parse(res);
+                    console.log(res2);
+                    res2.forEach(function(user, idx){
+                        const li = document.createElement('li');
+
+                        const html = `
+                            <div class="places place${idx + 1}">${idx + 1}등</div>
+                            <img class="thumbnail" src="${user.kakao_thumbnail}"  width="50" />
+                            <div class="game-info">
+                                <div class="nick txt-overflow1">${user.kakao_nick}</div>
+                                <div class="rec">
+                                    <span class="stage">Stage.${user.max_stage}</span>
+                                    <span class="sec">${user.min_rec}초</span>
+                                </div>
+                            </div>
+                        `;
+
+                        li.innerHTML = html;
+
+                        userList.appendChild(li);
+                    })
+                },
+                error: function(){
+                    alert('관리자에게 문의하세요.');
+                }
+            });
+        }
+
     </script>
 </body>
 </html>
