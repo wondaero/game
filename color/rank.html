@@ -132,7 +132,7 @@
             const mode = qs('#mode').value;
 
             ajaxPost({
-                url:'https://wondaero.gabia.io/getColorRank' + qs('#type').value == 'stage' ? 'ByStage' : '',
+                url:'https://wondaero.gabia.io/getColorRank' + (qs('#type').value == 'stage' ? 'ByStage' : ''),
                 data: {
                     id: userInfo.id,
                     mode: mode,
@@ -148,6 +148,7 @@
                     userList.innerHTML = '';
                     const res2 = JSON.parse(res);
 
+
                     if(!res2.length) userList.innerHTML = '<li>아직 아무도 없습니다.</li>';
 
 
@@ -156,7 +157,7 @@
 
                         const html = `
                             <div class="places place${idx + 1}">${idx + 1}등</div>
-                            <img ${userInfo.id === 2604634037 ? 'title="' + user.kakao_nick + '"' : ''}class="thumbnail" src="${user.kakao_thumbnail}"  width="50" />
+                            <img class="thumbnail" src="${user.kakao_thumbnail}"  width="50" />
                             <div class="game-info">
                                 <div class="nick txt-overflow1">${userInfo.id == user.id ? user.kakao_nick : 'user' + (idx + 1)}</div>
                                 <div class="rec">
