@@ -18,6 +18,8 @@
     .home{background: green;}
     .start{background: blue;}
 
+    .guide{letter-spacing: -1px;}
+
     .content{position: relative;}
     .content h3{margin: 0; margin-bottom: 10px; padding: 0 10px;}
 
@@ -67,7 +69,7 @@
             <button class="start" onclick="colorGame.startGame();">시작</button>
         </header>
         <div class="content">
-            <h3 class=""><span id="qIdx">1.</span> <span id="guide">시작버튼을 눌러주세요.</span></h3>
+            <h3 class=""><span id="qIdx">1.</span> <span id="guide" class="guide">시작버튼을 눌러주세요.</span></h3>
     
             <div id="colors" class="colors">
                 <div onclick="colorGame.answer(0)"></div>
@@ -114,6 +116,7 @@
 
     <script src="../assets/js/common.js"></script>
     <script>
+        commonJs.stopDevToll();
         if(!commonJs.isAccess()){
             alert('잘못된 접근입니다.');
             window.location.href = '../login.html';
@@ -161,6 +164,8 @@
             t.otherColorIdx = 0;
             t.r = t.g = t.b = '';
             t.stop = false;
+            t.btnStop = false;
+            t.btnStartStop = false;
 
             t.mode = '';
             t.ver = '';
@@ -171,15 +176,17 @@
 
             t.startGame = function(){
                 // if(t.start !== false && keep === undefined) return;
-                if(t.start) return;
+                if(t.start || t.btnStartStop) return;
                 if(t.stop)
                     if(!confirm('재시작 할까요?')) return;
 
                 t.init();
+                t.btnStartStop = true;
 
                 const userInfo = commonJs.userInfo();
 
                 t.start = true;
+                qs('#guide').innerText = '잠시만 기다려주세요.';
 
                 ajaxPost({
                     url:'https://wondaero.gabia.io/startColorGame',
@@ -191,6 +198,7 @@
                         const res2 = JSON.parse(res);
                         t.gameId = res2.insertId;
                         t.ing();
+                        t.btnStartStop = false;
                     },
                     error: function(){
                         alert('관리자에게 문의하세요.');
@@ -229,7 +237,9 @@
             }
 
             t.answer = function(idx){
-                if(t.stop === true) return;
+                if(t.stop === true || t.btnStop === true) return;
+                t.btnStop = true;
+                qs('#guide').innerText = '잠시만 기다려주세요.';
 
                 const colors = qs('#colors');
 
@@ -247,12 +257,12 @@
                             stage: t.quizIdx + 1
                         },
                         success: function(res){
-                            console.log(t.quizIdx);
                             if(t.quizIdx == (t.stage - 1)){    //30문제 다 풀음
                                 t.result(true);
                             }else{
                                 t.quizIdx++;
                                 t.ing();
+                                t.btnStop = false;
                             }
                         },
                         error: function(){
@@ -274,7 +284,6 @@
                     success: function(res){
                         const res2 = JSON.parse(res)[0];
 
-                        console.log(res2);
                         if(isEnd) qs('#colorMaster').classList.add('on');
 
                         colors.querySelectorAll('div')[t.otherColorIdx].classList.add('correct');
@@ -315,7 +324,7 @@
                 qs('#colors').classList.add('on');
                 qs('#colorMaster').classList.remove('on')
 
-                t.start = t.end = t.stop = false;
+                t.start = t.end = t.stop = t.btnStop = t.btnStartStop = false;
                 t.otherColorIdx = t.quizIdx = 0;
                 t.r = t.g = t.b = '';
                 t.history = [];
