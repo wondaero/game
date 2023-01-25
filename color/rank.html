@@ -132,11 +132,11 @@
             const mode = qs('#mode').value;
 
             ajaxPost({
-                url:'https://wondaero.gabia.io/getColorRank',
+                url:'https://wondaero.gabia.io/getColorRank' + qs('#type').value == 'stage' ? 'ByStage' : '',
                 data: {
                     id: userInfo.id,
                     mode: mode,
-                    stage: qs('#type').value == 'stage' ? qs('#stage').value : false
+                    stage: qs('#stage').value
                 },
                 success: function(res){
                     if(mode == 'light'){
