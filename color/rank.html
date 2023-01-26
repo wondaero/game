@@ -20,7 +20,7 @@
         outline: 0; border: 0; border-radius: 3px; width: 60px; padding: 5px; box-sizing: border-box; color: #fff; font-weight: 900;
         display: inline-flex; align-items: center; justify-content: center; text-decoration: none; background: green;
     }
-    .btn-rank{background: #00f;}
+    .btn-rank{background: #b4d491; color: #333;}
 
     .header-bottom{
         display: flex; align-items: center; justify-content: space-between;
@@ -35,7 +35,7 @@
     .header-hidden select{padding: 10px 5px;}
 
     .dark .user-list{color: #fff;}
-    .user-list{list-style: none; margin: 0; margin-top: 110px; padding: 0; width: 100%;}
+    .user-list{list-style: none; margin: 0; margin-top: 110px; padding: 0; width: 100%; margin-bottom: 100px;}
     .user-list.stage1{margin-top: 160px;}
     .user-list li{border-bottom: 1px solid #eee; padding: 10px 5px; display: flex; align-items: center;}
     .user-list li.me{background: #ccc;}
@@ -54,6 +54,12 @@
     .dark .stage > span{background: linear-gradient(transparent, 50%, #00f 0);}
     .sec{background: linear-gradient(transparent, 50%, #0f0 0);}
     .dark .sec{background: linear-gradient(transparent, 50%, #070 0);}
+
+    .quick-start{
+        position: fixed; bottom: 10px; right: 10px; width: 80px; height: 80px; border-radius: 50%; background: #777;
+        display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px;
+        box-shadow: 0 0 5px #777; text-decoration: none;
+    }
 
 </style>
 <body>
@@ -116,6 +122,8 @@
         </header>
         <ul id="userList" class="user-list"></ul>
 
+        <a href="game.html?mode=light&ver=1" class="quick-start" id="quickStart">바로시작</a>
+
     </div>
 
     <script src="../assets/js/common.js"></script>
@@ -125,8 +133,18 @@
             alert('잘못된 접근입니다.');
             window.location.href = '../login.html';
         }
+
+        const strQry = location.search.substr(1);
+        const qryArr = strQry.split('&');
+        const qryObj = {};
+        qryArr.forEach(function(qry){
+            const qry2arr = qry.split('=');
+            qryObj[qry2arr[0]] = qry2arr[1];
+        });
         
         const userInfo = commonJs.userInfo();
+        qs('#mode').value = qryObj.mode || 'light';
+        getColorRank();
 
         function getColorRank(){
             const mode = qs('#mode').value;
@@ -141,8 +159,10 @@
                 success: function(res){
                     if(mode == 'light'){
                         qs('body').classList.remove('dark');
+                        qs('#quickStart').href = 'game.html?mode=light&ver=1'
                     }else if(mode == 'dark'){
                         qs('body').classList.add('dark');
+                        qs('#quickStart').href = 'game.html?mode=dark&ver=1'
                     }
                     const userList = qs('#userList');
                     userList.innerHTML = '';
