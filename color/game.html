@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>군계일학 feat.coloR</title>
+    <title>이색게임</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="../assets/css/normalize.css">
 </head>
@@ -154,7 +154,7 @@
 
     <script src="../assets/js/common.js"></script>
     <script>
-        commonJs.stopDevToll();
+        // commonJs.stopDevToll();
         if(!commonJs.isAccess()){
             alert('잘못된 접근입니다.');
             window.location.href = '../login.html';
@@ -319,7 +319,7 @@
 
                 qs('#guide').innerText = '게임이 끝났습니다.';
 
-                qs('#rankHref').href = 'rank.html?mode=' + t.mode;
+                qs('#rankHref').href = 'rank.html?mode=' + t.mode + '&stage=' + t.quizIdx;
 
                 ajaxPost({
                     url:'https://wondaero.gabia.io/getColorGameInfo',

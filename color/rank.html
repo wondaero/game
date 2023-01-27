@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>color Rank</title>
+    <title>이색게임 랭킹</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="../assets/css/normalize.css">
     <link rel="stylesheet" href="../assets/css/layout.css" />
@@ -10,33 +10,66 @@
 <style>
     body{transition: background .8s ease-in-out;}
     body.dark{background: #000;}
-    header{padding: 10px; background: #777; position: fixed; top: 0; left: 0; right: 0;}
-    .header-top{
-        display: flex; align-items: center; justify-content: space-between; border-bottom: 1px dashed rgba(255, 255, 255, .5);
-        padding-bottom: 5px; margin-bottom: 5px;
+    header{
+        padding: 10px; background: #777; position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center;
+        justify-content: space-between;
     }
     .title{color: #fff; margin: 0; font-size: 25px;}
-    .btn-home, .btn-rank{
-        outline: 0; border: 0; border-radius: 3px; width: 60px; padding: 5px; box-sizing: border-box; color: #fff; font-weight: 900;
+    .btn-home{
+        outline: 0; border: 0; border-radius: 3px; width: 60px; padding: 5px; box-sizing: border-box; color: #eef; font-weight: 900;
         display: inline-flex; align-items: center; justify-content: center; text-decoration: none; background: green;
     }
-    .btn-rank{background: #b4d491; color: #333;}
 
-    .header-bottom{
-        display: flex; align-items: center; justify-content: space-between;
+    .ctrls-wrapper{margin: 55px 0 10px; padding: 0 10px;}
+    .ctrls{
+        border-radius: 8px; padding: 5px; border: 1px dashed #eee; display: flex; align-items: center; justify-content: space-between;
+    }
+    .ctrls .ctrl-type input{display: none;}
+    .ctrls .ctrl-type input + span{
+        width: 65px; display: inline-flex; align-items: center; justify-content: center;
+        padding: 5px; border: 1px solid #eee; background: #eee; color: #ddd;
+        font-weight: 900;
+    }
+    .ctrls .ctrl-type input:checked + span{
+        background: green; color: #eef; box-shadow: 0 0 5px rgba(0, 0, 0, .5);
     }
 
-    .header-bottom select{padding: 10px 5px;}
+    .toggle1{
+        width: 75px; height: 28px; border-radius: 50px; background: #eee; display: inline-block; position: relative;
+        overflow: hidden;
+    }
+    .toggle1:before{
+        content: 'light'; position: absolute; display: inline-block; top: 50%; left: 32px; transform: translateY(-50%);
+        font-size: 14px; color: #333;
+    }
+    .toggle1 input{display: none;}
+    .toggle1 span{
+        height: 100%; background: #333; display: inline-block; vertical-align: top; border-radius: 50px;
+        text-align: right; transition: all .3s cubic-bezier(0.68, -0.55, 0.27, 1.55); width: 20px; position: relative;
+    }
+    .toggle1 span:after{
+        content: ''; display: inline-block; width: 28px; height: 28px; border-radius: 50%; background: slategray;
+    }
+    .toggle1 span:before{
+        content: 'dark'; display: inline-block; position: absolute; top: 50%; right: 32px; transform: translateY(-50%);
+        font-size: 14px; color: #eef;
+    }
+    .toggle1 input:checked + span{width: 100%;}
 
-    .header-hidden{display: flex; align-items: center; margin-top: 5px;}
-    .header-hidden.hidden{display: none;}
-    .btn-prev{margin-right: 10px;}
-    .btn-next{margin-left: 10px;}
-    .header-hidden select{padding: 10px 5px;}
+
+    .ctrl-stage{display: flex; align-items: center; justify-content: center; margin-top: 5px;}
+    .ctrl-stage.hidden{display: none;}
+    .btn-dir{display: inline-block; position: relative; width: 32px; height: 32px;}
+    .btn-dir:after{content: ''; display: inline-block; position: absolute; top: 0; bottom: 0; border: 16px solid transparent;}
+
+    .btn-prev{margin-right: 5px;}
+    .btn-prev:after{border-right: 16px solid #777; left: -5px;}
+    .btn-next{margin-left: 5px;}
+    .btn-next:after{border-left: 16px solid #777; right: -5px;}
+    .ctrl-stage select{padding: 5px 5px;}
 
     .dark .user-list{color: #fff;}
-    .user-list{list-style: none; margin: 0; margin-top: 110px; padding: 0; width: 100%; margin-bottom: 100px;}
-    .user-list.stage1{margin-top: 160px;}
+    .user-list{list-style: none; margin: 0; padding: 0; width: 100%; margin-bottom: 100px;}
     .user-list li{border-bottom: 1px solid #eee; padding: 10px 5px; display: flex; align-items: center;}
     .user-list li.me{background: #ccc;}
 
@@ -65,26 +98,28 @@
 <body>
     <div class="wrapper">
         <header>
-            <div class="header-top">
-                <h1 class="title">군계일학 랭킹</h1>
-                <a href="./index.html" class="btn-home">홈</a>
-            </div>
-            <div class="header-bottom">
+            <h1 class="title">이색게임</h1>
+            <a href="./index.html" class="btn-home">홈</a>
+        </header>
+        <div class="ctrls-wrapper">
+            <div class="ctrls">
                 <div>
-                    <select id="mode">
-                        <option value="light">라이트</option>
-                        <option value="dark">다크</option>
-                    </select>
-                    <select id="type" onchange="sort(this);">
-                        <option value="all">전체</option>
-                        <option value="stage">스테이지</option>
-                        <!-- <option value="friend">친구</option> -->
-                    </select>
+                    <label class="ctrl-type">
+                        <input type="radio" name="type" value="all" onchange="setType(this);" checked />
+                        <span>전체</span>
+                    </label>
+                    <label class="ctrl-type">
+                        <input type="radio" name="type" value="stage" onchange="setType(this);" />
+                        <span>스테이지</span>
+                    </label>
                 </div>
-                <button class="btn-rank" onclick="getColorRank();">랭킹!</button>
+                <label class="toggle1">
+                    <input id="mode" type="checkbox" onchange="getColorRank();" />
+                    <span></span>
+                </label>
             </div>
-            <div id="hiddenHeader" class="header-hidden hidden">
-                <img class="btn-prev" src="../assets/img/btn-prev.svg" width="30" onclick="stage('prev');" />
+            <div id="ctrlStage" class="ctrl-stage hidden">
+                <span class="btn-dir btn-prev" onclick="stage('prev');"></span>
                 <select id="stage" disabled>
                     <option value="30">30</option>
                     <option value="29">29</option>
@@ -117,18 +152,16 @@
                     <option value="2">2</option>
                     <option value="1">1</option>
                 </select>
-                <img class="btn-next" src="../assets/img/btn-next.svg" width="30" onclick="stage('next');" />
+                <span class="btn-dir btn-next" onclick="stage('next');"></span>
             </div>
-        </header>
+        </div>
         <ul id="userList" class="user-list"></ul>
-
         <a href="game.html?mode=light&ver=1" class="quick-start" id="quickStart">바로시작</a>
 
     </div>
 
     <script src="../assets/js/common.js"></script>
     <script>
-        
         if(!commonJs.isAccess()){
             alert('잘못된 접근입니다.');
             window.location.href = '../login.html';
@@ -137,20 +170,28 @@
         const strQry = location.search.substr(1);
         const qryArr = strQry.split('&');
         const qryObj = {};
+
         qryArr.forEach(function(qry){
             const qry2arr = qry.split('=');
             qryObj[qry2arr[0]] = qry2arr[1];
         });
         
         const userInfo = commonJs.userInfo();
-        qs('#mode').value = qryObj.mode || 'light';
+
+        if(qryObj.mode == 'dark') qs('#mode').checked = true;
+
+        if(+qryObj.stage){
+            qs('#stage').value =  qryObj.stage;
+            qs('[value="stage"]').click();
+        }
+        
         getColorRank();
 
         function getColorRank(){
-            const mode = qs('#mode').value;
+            const mode = qs('#mode').checked ? 'dark' : 'light';
 
             ajaxPost({
-                url:'https://wondaero.gabia.io/getColorRank' + (qs('#type').value == 'stage' ? 'ByStage' : ''),
+                url:'https://wondaero.gabia.io/getColorRank' + (qs('[name="type"]:checked').value == 'stage' ? 'ByStage' : ''),
                 data: {
                     id: userInfo.id,
                     mode: mode,
@@ -187,7 +228,10 @@
                             </div>
                         `;
 
-                        if(userInfo.id == user.id) li.classList.add('me');
+                        if(userInfo.id == user.id){
+                            li.classList.add('me');
+                            li.id = 'bbb';
+                        }
 
                         li.innerHTML = html;
 
@@ -200,23 +244,25 @@
             });
         }
 
-        function sort(target){
+        function setType(target){
             if(target.value == 'stage'){
-                qs('#hiddenHeader').classList.remove('hidden');
-                qs('#userList').classList.add('stage1');
+                qs('#ctrlStage').classList.remove('hidden');
                 qs('#stage').disabled = false;
             }else{
-                qs('#hiddenHeader').classList.add('hidden');
-                qs('#userList').classList.remove('stage1');
+                qs('#ctrlStage').classList.add('hidden');
                 qs('#stage').disabled = true;
             };
-        }
+
+            getColorRank();
+        };
 
         function stage(dir){
             const stageSelect = qs('#stage');
             const currentStage = stageSelect.value;
             if(dir == 'prev') stageSelect.value = currentStage == 1 ? 30 : +currentStage  - 1;
             else if(dir == 'next') stageSelect.value = currentStage == 30 ? 1 : +currentStage + 1;
+
+            getColorRank();
         }
 
     </script>
