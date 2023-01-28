@@ -12,7 +12,7 @@
     body.dark{background: #000;}
     header{
         padding: 10px; background: #777; position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center;
-        justify-content: space-between;
+        justify-content: space-between; z-index: 1;
     }
     .title{color: #fff; margin: 0; font-size: 25px;}
     .btn-home{
@@ -160,6 +160,7 @@
 
     </div>
 
+    <!-- <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script> -->
     <script src="../assets/js/common.js"></script>
     <script>
         if(!commonJs.isAccess()){
@@ -264,7 +265,6 @@
 
             getColorRank();
         }
-
     </script>
 </body>
 </html>

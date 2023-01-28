@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <title>이쯤</title>
+        <link rel="stylesheet" href="../assets/css/normalize.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+
+        <style>
+            header{
+                box-sizing: border-box; padding: 10px; display: flex; align-items: center; justify-content: space-between;
+                background: gold; margin-bottom: 10px;
+            }
+            h1{margin: 0; padding: 0;}
+            header a{
+                display: inline-flex; text-decoration: none; border-radius: 8px; width: 60px; border: 0; outline: 0; padding: 5px 0;
+                align-items: center; justify-content: center;
+            }
+            .btn-home{background: #333; color: #ffe;}
+            .btn-rank{background: orange; color: #333;}
+
+            .content-wrapper{width: 280px; margin: 0 auto; padding: 0 10px; box-sizing: border-box;}
+
+            .radios input{display: none;}
+            .radios input + span{
+                display: inline-flex; width: 32px; height: 32px; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px;
+                opacity: .3;
+            }
+
+            .radios input:checked + span{opacity: 1; box-shadow: inset 0 0 5px #fff;}
+
+            .radios label:nth-child(1) span{background: red;}
+            .radios label:nth-child(2) span{background: orange;}
+            .radios label:nth-child(3) span{background: yellow;}
+            .radios label:nth-child(4) span{background: green; color: #fff;}
+            .radios label:nth-child(5) span{background: blue; color: #fff;}
+            .radios label:nth-child(6) span{background: navy; color: #fff;}
+            .radios label:nth-child(7) span{background: purple; color: #fff;}
+
+            .txt-timer.off, .handle.off{opacity: 0; transition: opacity .5s;}
+            .txt-timer{text-align: center; font-size: 20px; margin-bottom: 10px;}
+            .integer{}
+            .decimal{font-size: 13px;}
+            .diff-sec{height: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; color: #f00; font-weight: 900; font-size: 20px;}
+            .img-timer{
+                border-radius: 50%; width: 120px; height: 120px; border: 5px solid gold; box-sizing: border-box; position: relative;
+                background: linear-gradient(135deg, #000, navy); margin: 0 auto; margin-bottom: 10px;
+            }
+            .handle{position: absolute; top: 0; left: 0; right: 0; bottom: 0; box-sizing: border-box;}
+            .handle:after{
+                content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+                width: 2px; height: 50px; border-radius: 50% 50% 0 0; background: linear-gradient(transparent, red);
+            }
+
+            .btn-wrapper{text-align: center;}
+            .btn-wrapper button{color: #fff; padding: 30px; border: 0; outline: 0; font-size: 50px; border-radius: 8px;}
+            .btn-wrapper button.hidden{display: none;}
+            .btn-stop{background: #d00;}
+            .btn-start{background: green;}
+        </style>
+        
+     </head>
+     <body>
+        <header>
+            <h1>이쯤</h1>
+            <div>
+                <a href="index.html" class="btn-home">홈</a>
+                <a href="rank.html" class="btn-rank">랭킹</a>
+            </div>
+        </header>
+        <div class="content-wrapper">
+            <div id="radios" class="radios">
+                <label><input type="radio" name="sec" value="5"><span>5초</span></label>
+                <label><input type="radio" name="sec" value="6"><span>6초</span></label>
+                <label><input type="radio" name="sec" value="7"><span>7초</span></label>
+                <label><input type="radio" name="sec" value="8"><span>8초</span></label>
+                <label><input type="radio" name="sec" value="9"><span>9초</span></label>
+                <label><input type="radio" name="sec" value="10"><span>10초</span></label>
+                <label><input type="radio" name="sec" value="0" checked><span>랜덤</span></label>
+            </div>
+            <h2 id="guide" class="guide">시작버튼 클릭!</h2>
+            <div id="diffSec" class="diff-sec"></div>
+            <div id="txtTimer" class="txt-timer">0초</div>
+            <div id="imgTimer" class="img-timer">
+                <div id="handle" class="handle"></div>
+            </div>
+            <div class="btn-wrapper">
+                <button id="btnStart" class="btn-start" onclick="timer.startGame();">START</button>
+                <button id="btnStop" class="btn-stop hidden" onclick="timer.stop();">STOP</button>
+            </div>
+        </div>
+
+
+        <script src="../assets/js/common.js"></script>
+        <script>
+            commonJs.stopDevToll();
+
+            if(!commonJs.isAccess()){
+                alert('잘못된 접근입니다.');
+                window.location.href = '../login.html';
+            }
+
+            const guide = qs('#guide');
+            const txtTimer = qs('#txtTimer');
+            const imgTimer = qs('#imgTimer');
+            const handle = qs('#handle');
+            const diffSec = qs('#diffSec');
+            const btnStart = qs('#btnStart');
+            const btnStop = qs('#btnStop');
+            
+            const timer = new Timer();
+
+            function Timer () {
+                const t = this;
+
+                t.oldTimeStamp = 0;
+
+                t.init = function () {
+                    t.questSec = 0;
+                    window.cancelAnimationFrame(t.raf);
+                    t.raf;
+                    t.startTime = 0;
+                    t.nowTime = 0;
+                    t.isOver2 = false;
+                    t.isStop = false;
+                    txtTimer.innerHTML = '<div>0초</div>';
+                    handle.style.transform = 'rotate(0)';
+                    txtTimer.classList.remove('off');
+                    handle.classList.remove('off');
+                    btnStart.classList.remove('hidden');
+                    btnStop.classList.add('hidden');
+                    diffSec.innerHTML = '';
+
+                }
+                t.init();
+
+                t.startGame = function(){
+                    t.init();
+
+                    btnStart.classList.add('hidden');
+                    btnStop.classList.remove('hidden');
+
+                    const secVal = qs('#radios input:checked').value;
+
+                    t.questSec = +secVal || getRandomNum(5, 10);
+                    t.startTime = window.performance.now();
+                    t.startTime = new Date().getTime();
+                    guide.innerHTML = '<span>' + t.questSec + '초를 맞추세요.<span>';
+                    t.raf = window.requestAnimationFrame(t.ing);
+                }
+
+                t.stop = function(){
+                    if(!t.startTime) return;
+                    t.gameOver();
+                };
+                
+                t.ing = function(){
+                    if(t.isStop) return window.cancelAnimationFrame(t.raf);
+
+                    const timeStamp = new Date().getTime();
+
+
+                    if(t.oldTimeStamp > timeStamp){
+                        alert('시간을 바꾸셨네요..?');
+                        window.location.reload();
+                    };
+
+                    t.oldTimeStamp = timeStamp;
+
+                    const sec = (timeStamp - t.startTime) / 1000;
+
+                    if(sec < 0){
+                        t.raf = window.requestAnimationFrame(t.ing);
+                        return;
+                    }
+
+                    const secArr = ('' + sec).split('.');
+
+                    const secTemplate = '<div><span class="integer">' + secArr[0] + '</span>.<span class="decimal">' + secArr[1] +'</span></div>';
+
+                    txtTimer.innerHTML = secTemplate;
+                    handle.style.transform = 'rotate(' + (sec / t.questSec * 360)+ 'deg)';
+
+                    if(!t.isOver2 && sec > 3){
+                        txtTimer.classList.add('off');
+                        handle.classList.add('off');
+                        t.isOver2 = true;
+                    }else if(sec > t.questSec + 5){
+                        t.gameOver('over');
+                    }
+                    
+                    t.raf = window.requestAnimationFrame(t.ing);
+                }
+
+                t.gameOver = function(result){
+                    t.isStop = true;
+                    t.raf = window.cancelAnimationFrame(t.raf);
+                    txtTimer.classList.remove('off');
+                    handle.classList.remove('off');
+
+                    btnStart.classList.remove('hidden');
+                    btnStop.classList.add('hidden');
+
+                    if(result == 'over'){
+                        guide.innerHTML = '<span>시간이 너무 지남...</span>';
+                    }else{
+                        const stopTime = +txtTimer.innerText;
+                        const calcedSec = Math.abs(((t.questSec * 100000) - (stopTime * 100000)) / 100000);
+                        const roundCalcedSec = Math.round(calcedSec * 1000) / 1000;
+                        diffSec.innerHTML = '오차: ' + roundCalcedSec;
+
+                        const userInfo = commonJs.userInfo();
+                        
+
+                        ajaxPost({
+                            url:'https://wondaero.gabia.io/insertTimerGame',
+                            data: {
+                                id: userInfo.id,
+                                reqTime: t.questSec,
+                                stopTime: stopTime,
+                                diff: roundCalcedSec,
+                            },
+                            success: function(res){
+                                const res2 = JSON.parse(res);
+                            },
+                            error: function(){
+                                alert('관리자에게 문의하세요.');
+                            }
+                        });
+
+
+
+
+
+                        guide.innerTHML = '시작버튼 클릭!';
+                    }
+                }
+            }
+        </script>
+     </body>
+</html>

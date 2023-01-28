@@ -23,7 +23,10 @@
       fieldset{border-radius: 8px; background: #eee; border: 0; padding: 10px; margin: 0; border-top: 1px solid #ccc;}
       legend h2{margin: 0;}
       ul.game-list{margin: 0; /*padding-left: 18px;*/ padding: 0;}
-      ul.game-list li{padding: 10px 0; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; justify-content: space-between;}
+      ul.game-list li{
+        padding: 10px 0; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+        border-bottom: 1px dashed rgba(0, 0, 0, .1)
+      }
       ul.game-list li:hover{background: radial-gradient(rgba(255, 255, 255, .8), transparent);}
       ul.game-list a{
         text-decoration: 0; color: #000; margin: 0; padding: 5px; border: 0; outline: 0;
@@ -31,6 +34,10 @@
       }
       ul.game-list .btns{display: flex; flex-direction: column; align-items: cener;}
       ul.game-list li button:last-child{margin-bottom: 0;}
+
+      .new, .play-cnt{background: #f00; color: #fff; padding: 0 5px; border-radius: 3px; margin-left: 5px;}
+      .play-cnt{display: none;}
+      li:hover .play-cnt{display: inline;}
     </style>
   </head>
   <body>
@@ -50,12 +57,18 @@
           <legend><h2>게임 리스트</h2></legend>
           <ul class="game-list">
             <li>
-              <div>이색게임</div>
+              <div data-id="color">이색게임</div>
               <div class="btns">
                 <a href="color/index.html">PLAY</a>
               </div>
               </li>
-            <li></li>
+            <li>
+              <div data-id="timer">이쯤<span class="new" data-pub="20230128">new</span></div>
+              <div class="btns">
+                <a href="timer/index.html">PLAY</a>
+              </div>
+              </li>
+            </li>
           </ul>
         </fieldset>
       </div>
@@ -67,6 +80,36 @@
       if(!commonJs.isAccess()){
         alert('잘못된 접근입니다.');
         window.location.href = 'login.html';
+      }
+
+      getPlayCnt();
+
+      function getPlayCnt(){
+        ajaxPost({
+            url:'https://wondaero.gabia.io/isAdmin',
+            data: {id: userInfo.id},
+            success: function(res){
+              const res2 = JSON.parse(res);
+              if(res2.length){
+                ajaxPost({
+                  url:'https://wondaero.gabia.io/colorToday',
+                  success: function(res){
+                      const res2 = JSON.parse(res);
+                      const cnt = '<span class="play-cnt">' + res2[0].cnt + '</span>';
+                      qs('[data-id="color"]').innerHTML += cnt;
+                  }
+                });
+                ajaxPost({
+                  url:'https://wondaero.gabia.io/timerToday',
+                  success: function(res){
+                    const res2 = JSON.parse(res);
+                    const cnt = '<span class="play-cnt">' + res2[0].cnt + '</span>';
+                    qs('[data-id="timer"]').innerHTML += cnt;
+                  }
+                });
+              }
+            }
+        });
       }
 
       const userInfoUI = qs('#userInfo');
