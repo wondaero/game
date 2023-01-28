@@ -37,7 +37,7 @@
     .thumbnail{border-radius: 8px; margin-right: 5px;}
     .nick{font-weight: 600; margin-bottom: 10px;}
     .rec{font-weight: 600; margin-bottom: 5px;}
-    .req-sec{width: 40px; display: inline-block;}
+    .req-sec{width: 45px; display: inline-block;}
     .req-sec > span{background: linear-gradient(transparent, 50%, #0ff 0); padding: 0 5px;}
     .stop-sec{background: linear-gradient(transparent, 50%, #0f0 0); padding: 0 5px;}
     .diff-sec{color: #333; font-weight: 900;}
@@ -89,8 +89,6 @@
                     const userList = qs('#userList');
                     userList.innerHTML = '';
                     const res2 = JSON.parse(res);
-
-                    console.log(res2);
 
                     if(!res2.length) userList.innerHTML = '<li>아직 아무도 없습니다.</li>';
 
