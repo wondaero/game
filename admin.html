@@ -1,0 +1,180 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>게임리스트</title>
+    <link rel="stylesheet" href="./assets/css/normalize.css" />
+    <link rel="stylesheet" href="./assets/css/layout.css" />
+
+    <style>
+      header{background: #decade; padding: 10px; display: flex; align-items: center; justify-content: space-between;}
+      header h2{margin: 0;}
+      .content-wrapper{padding: 10px; box-sizing: border-box;}
+    
+      fieldset{border-radius: 8px; background: #eee; border: 0; padding: 10px; margin: 0; border-top: 1px solid #ccc; margin-bottom: 20px;}
+      fieldset legend{display: flex; width: 100%; justify-content: space-between; align-items: center;}
+      fieldset legend button{outline: 0; border: 0; background: #ace; padding: 5px 10px; border-radius: 8px;}
+      fieldset > div{display: flex;}
+      .today-wrapper{margin-bottom: 10px;}
+      fieldset > div input[type="radio"]{margin-right: 10px; width: 20px; height: 20px;}
+      .from-to-box:first-child{margin-bottom: 10px;}
+      .from-to-box span{display: inline-block; width: 40px;}
+      .user-cnt, .play-cnt{font-size: 30px; color: #f00; margin-top: 10px; border-top: 1px solid #000;justify-content: flex-end;}
+
+      ul, ol{border-top: 1px solid #000; margin: 10px 0; padding-top: 10px;}
+      ul li, ol li{margin-bottom: 5px;}
+      ul li input, ol li input{margin-right: 10px;}
+      ul li:last-child ol, li:last-child{margin-bottom: 0;}
+
+    </style>
+  </head>
+  <body>
+    <div>
+      <header>
+        <h2>ADMIN PAGE</h2>
+      </header>
+      <div class="content-wrapper">
+        <fieldset>
+          <legend><span>가입유저</span><button onclick="getUserCnt();">검색</button></legend>
+          <div class="today-wrapper">
+            <input type="radio" name="user_period" value="today" checked />
+            <div>
+              <div class="today">Today</div>
+            </div>
+          </div>
+          <div class="from-to-box-wrapper">
+            <input type="radio" name="user_period" value="fromTo" />
+            <div>
+              <div class="from-to-box from-box">
+                <span>from</span>
+                <input type="date" name="user_from" data-id="period">
+              </div>
+              <div class="from-to-box to-box">
+                <span>to</span>
+                <input type="date" name="user_to" data-id="period">
+              </div>
+            </div>
+          </div>
+          <div id="userCnt" class="user-cnt">0</div>
+        </fieldset>
+        <fieldset>
+          <legend><span>게임횟수</span><button onclick="getGameCnt();">검색</button></legend>
+          <div class="today-wrapper">
+            <input type="radio" name="game_period" value="today" checked />
+            <div>
+              <div class="today">Today</div>
+            </div>
+          </div>
+          <div class="from-to-box-wrapper">
+            <input type="radio" name="game_period" value="fromTo" />
+            <div>
+              <div class="from-to-box from-box">
+                <span>from</span>
+                <input type="date" name="game_from" data-id="period">
+              </div>
+              <div class="from-to-box to-box">
+                <span>to</span>
+                <input type="date" name="game_to" data-id="period">
+              </div>
+            </div>
+          </div>
+          <ul class="game-list">
+            <li><label><input type="radio" name="games" value="color_light" checked><b>이색게임(라이트)</b></label></li>
+            <li><label><input type="radio" name="games" value="color_dark"><b>이색게임(다크)</b></label></li>
+            <li><label><input type="radio" name="games" value="timer"><b>이쯤</b></label></li>
+          </ul>
+          <div id="playCnt" class="play-cnt">0</div>
+          <!-- <ol id="userList" class="user-list"></ol> -->
+        </fieldset>
+      </div>
+    </div>
+    <script src="./assets/js/common.js"></script>
+    <script>
+      const userInfo = commonJs.userInfo();
+
+      if(!commonJs.isAccess()){
+        alert('잘못된 접근입니다.');
+        window.location.href = 'login.html';
+      }
+
+
+      const date = new Date();
+      
+      qsa('[data-id="period"]').forEach(function(input){
+        input.value = date.toISOString().substring(0, 10);
+      })
+
+      getUserCnt();
+      getGameCnt();
+
+
+
+      // getUserList();
+
+      function getUserList(){
+        const userList = qs('#userList');
+        ajaxPost({
+          url:'https://wondaero.gabia.io/getUserList',
+          data: {id: userInfo.id},
+          success: function(res){
+              const res2 = JSON.parse(res);
+
+              res2.forEach(function(user){
+                const li = document.createElement('li');
+                const userTemplate = `<label><input type="checkbox" name="users" value="${user.kakao_id}" checked><b>${user.kakao_nick}</b></label>`;
+                li.innerHTML = userTemplate;
+                userList.appendChild(li);
+              })
+          }
+        });
+      }
+
+      
+      
+      function getUserCnt(){
+        ajaxPost({
+          url:'https://wondaero.gabia.io/getUserCnt',
+          data: {
+            type: qs('[name="user_period"]:checked').value,
+            from: qs('[name="user_from"]').value,
+            to: qs('[name="user_to"]').value
+          },
+          success: function(res){
+              const res2 = JSON.parse(res);
+              qs('#userCnt').innerHTML = res2[0].cnt;
+          }
+        });
+      }
+
+      function getGameCnt(){
+        const param = {
+          type: qs('[name="game_period"]:checked').value,
+          from: qs('[name="game_from"]').value,
+          to: qs('[name="game_to"]').value,
+          game: qs('[name="games"]:checked').value,
+          users: []
+        };
+
+        qsa('[name="users"]:checked').forEach(function(input){
+          param.users.push(input.value);
+        })
+        console.log(param);
+
+        ajaxPost({
+          url:'https://wondaero.gabia.io/getPlayCnt',
+          data: param,
+          success: function(res){
+              const res2 = JSON.parse(res);
+              qs('#playCnt').innerHTML = res2[0].cnt;
+          }
+        });
+      }
+
+
+
+
+
+    </script>
+  </body>
+</html>

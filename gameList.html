@@ -16,8 +16,12 @@
       .thumbnail{border-radius: 8px; width: 50px;}
       .thumbnail img{vertical-align: top; border-radius: 8px;}
       .nickname{padding: 0 10px; flex: 1; box-sizing: border-box;}
-      header{background: #decade; padding: 10px; box-sizing: border-box;}
+      header{background: #decade; padding: 10px; display: flex; align-items: center; justify-content: space-between;}
       header h2{margin: 0;}
+      header a{
+        display: inline-block; border: 0; outline: 0; padding: 5px 10px; background: #ace; box-shadow: 0 0 5px rgba(0, 0, 0, .5);
+        text-decoration: none; color: #333;
+      }
       .user-info .btns button{outline: 0; background: 0; border: 0; padding: 0;}
     
       fieldset{border-radius: 8px; background: #eee; border: 0; padding: 10px; margin: 0; border-top: 1px solid #ccc;}
@@ -42,9 +46,7 @@
   </head>
   <body>
     <div>
-      <header>
-        <h2>R. Temp. Game</h2>
-      </header>
+      <header><h2>R. Temp. Game</h2></header>
       <div class="game-list">
         <div id="userInfo" class="user-info">
           <div id="thumbnail" class="thumbnail"><img width="50" /></div>
@@ -82,33 +84,19 @@
         window.location.href = 'login.html';
       }
 
-      // getPlayCnt();
+      setAdminBtn();
 
-      function getPlayCnt(){
+      function setAdminBtn(){
         ajaxPost({
-            url:'https://wondaero.gabia.io/isAdmin',
-            data: {id: userInfo.id},
-            success: function(res){
+          url:'https://wondaero.gabia.io/isAdmin',
+          data: {id: userInfo.id},
+          success: function(res){
               const res2 = JSON.parse(res);
-              if(res2.length){
-                ajaxPost({
-                  url:'https://wondaero.gabia.io/colorToday',
-                  success: function(res){
-                      const res2 = JSON.parse(res);
-                      const cnt = '<span class="play-cnt">' + res2[0].cnt + '</span>';
-                      qs('[data-id="color"]').innerHTML += cnt;
-                  }
-                });
-                ajaxPost({
-                  url:'https://wondaero.gabia.io/timerToday',
-                  success: function(res){
-                    const res2 = JSON.parse(res);
-                    const cnt = '<span class="play-cnt">' + res2[0].cnt + '</span>';
-                    qs('[data-id="timer"]').innerHTML += cnt;
-                  }
-                });
+              if(res2[0].cnt == 1){
+                const cnt = '<a href="admin.html">ADMIN</a>';
+                qs('header').innerHTML += cnt;
               }
-            }
+          }
         });
       }
 
