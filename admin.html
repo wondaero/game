@@ -15,7 +15,7 @@
       fieldset{border-radius: 8px; background: #eee; border: 0; padding: 10px; margin: 0; border-top: 1px solid #ccc; margin-bottom: 20px;}
       fieldset legend{display: flex; width: 100%; justify-content: space-between; align-items: center;}
       fieldset legend button{outline: 0; border: 0; background: #ace; padding: 5px 10px; border-radius: 8px;}
-      fieldset > div{display: flex;}
+      fieldset > div{display: flex; align-items: center;}
       .today-wrapper{margin-bottom: 10px;}
       fieldset > div input[type="radio"]{margin-right: 10px; width: 20px; height: 20px;}
       .from-to-box:first-child{margin-bottom: 10px;}
@@ -35,54 +35,54 @@
         <h2>ADMIN PAGE</h2>
       </header>
       <div class="content-wrapper">
-        <fieldset>
+        <fieldset id="user">
           <legend><span>가입유저</span><button onclick="getUserCnt();">검색</button></legend>
           <div class="today-wrapper">
-            <input type="radio" name="user_period" value="today" checked />
+            <input type="radio" name="user_period" value="today" onchange="changeData(this);" checked />
             <div>
               <div class="today">Today</div>
             </div>
           </div>
           <div class="from-to-box-wrapper">
-            <input type="radio" name="user_period" value="fromTo" />
+            <input type="radio" name="user_period" value="fromTo" onchange="changeData(this);" />
             <div>
               <div class="from-to-box from-box">
                 <span>from</span>
-                <input type="date" name="user_from" data-id="period">
+                <input type="date" name="user_from" data-id="period" onchange="changeData(this, 'user');" />
               </div>
               <div class="from-to-box to-box">
                 <span>to</span>
-                <input type="date" name="user_to" data-id="period">
+                <input type="date" name="user_to" data-id="period" onchange="changeData(this, 'user');" />
               </div>
             </div>
           </div>
           <div id="userCnt" class="user-cnt">0</div>
         </fieldset>
-        <fieldset>
+        <fieldset id="game">
           <legend><span>게임횟수</span><button onclick="getGameCnt();">검색</button></legend>
           <div class="today-wrapper">
-            <input type="radio" name="game_period" value="today" checked />
+            <input type="radio" name="game_period" value="today" onchange="changeData(this);"  checked />
             <div>
               <div class="today">Today</div>
             </div>
           </div>
           <div class="from-to-box-wrapper">
-            <input type="radio" name="game_period" value="fromTo" />
+            <input type="radio" name="game_period" value="fromTo" onchange="changeData(this);" />
             <div>
               <div class="from-to-box from-box">
                 <span>from</span>
-                <input type="date" name="game_from" data-id="period">
+                <input type="date" name="game_from" data-id="period" onchange="changeData(this, 'game');" />
               </div>
               <div class="from-to-box to-box">
                 <span>to</span>
-                <input type="date" name="game_to" data-id="period">
+                <input type="date" name="game_to" data-id="period" onchange="changeData(this, 'game');" />
               </div>
             </div>
           </div>
           <ul class="game-list">
-            <li><label><input type="radio" name="games" value="color_light" checked><b>이색게임(라이트)</b></label></li>
-            <li><label><input type="radio" name="games" value="color_dark"><b>이색게임(다크)</b></label></li>
-            <li><label><input type="radio" name="games" value="timer"><b>이쯤</b></label></li>
+            <li><label><input type="radio" name="games" value="color_light" onchange="changeData(this);" checked /><b>이색게임(라이트)</b></label></li>
+            <li><label><input type="radio" name="games" value="color_dark" onchange="changeData(this);" /><b>이색게임(다크)</b></label></li>
+            <li><label><input type="radio" name="games" value="timer" onchange="changeData(this);" /><b>이쯤</b></label></li>
           </ul>
           <div id="playCnt" class="play-cnt">0</div>
           <!-- <ol id="userList" class="user-list"></ol> -->
@@ -92,6 +92,12 @@
     <script src="./assets/js/common.js"></script>
     <script>
       const userInfo = commonJs.userInfo();
+
+      if(!userInfo){
+        alert('잘못된 접근입니다.');
+        window.location.href = 'login.html';
+      }
+
 
       ajaxPost({
         url:'https://wondaero.gabia.io/isAdmin',
@@ -177,6 +183,13 @@
               qs('#playCnt').innerHTML = res2[0].cnt;
           }
         });
+      }
+
+      function changeData(target, option){
+        const dataId = target.dataset.id;
+        if(dataId == 'period') qs('[name="' + option + '_period"][value="fromTo"]').checked = true;
+
+        target.closest('#user') ? getUserCnt() : getGameCnt();
       }
 
 
