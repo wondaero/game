@@ -108,8 +108,6 @@
       getUserCnt();
       getGameCnt();
 
-
-
       // getUserList();
 
       function getUserList(){
@@ -130,8 +128,6 @@
         });
       }
 
-      
-      
       function getUserCnt(){
         ajaxPost({
           url:'https://wondaero.gabia.io/getUserCnt',
@@ -159,7 +155,6 @@
         qsa('[name="users"]:checked').forEach(function(input){
           param.users.push(input.value);
         })
-        console.log(param);
 
         ajaxPost({
           url:'https://wondaero.gabia.io/getPlayCnt',

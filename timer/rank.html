@@ -18,7 +18,25 @@
         display: inline-flex; align-items: center; justify-content: center; text-decoration: none; background: #333;
     }
 
-    .info{margin: 50px 0 0; padding: 10px; box-sizing: border-box;}
+    .radios{margin: 55px 0 0; padding: 10px;}
+    .radios input{display: none;}
+    .radios input + span{
+        display: inline-flex; width: 32px; height: 32px; align-items: center; justify-content: center; border-radius: 50%; font-size: 10px;
+        opacity: .3;
+    }
+
+    .radios input:checked + span{opacity: 1; box-shadow: inset 0 0 5px #fff;}
+
+    .radios label:nth-child(1) span{background: red;}
+    .radios label:nth-child(2) span{background: orange;}
+    .radios label:nth-child(3) span{background: yellow;}
+    .radios label:nth-child(4) span{background: green; color: #fff;}
+    .radios label:nth-child(5) span{background: blue; color: #fff;}
+    .radios label:nth-child(6) span{background: navy; color: #fff;}
+    .radios label:nth-child(7) span{background: purple; color: #fff;}
+
+    .info{margin: 0; padding: 10px; box-sizing: border-box;}
+    .info.hidden{display: none;}
     .info_content{
         width: 100%; background: #eef; display: inline-block; font-size: 12px; padding: 5px; box-sizing: border-box;
         color: #889; font-weight: 900;
@@ -57,7 +75,16 @@
             <h1 class="title">이쯤</h1>
             <a href="./index.html" class="btn-home">홈</a>
         </header>
-        <p class="info">
+        <div id="radios" class="radios">
+            <label><input type="radio" name="sec" value="0" onchange="getRank()" checked><span>전체</span></label>
+            <label><input type="radio" name="sec" value="5" onchange="getRank()"><span>5초</span></label>
+            <label><input type="radio" name="sec" value="6" onchange="getRank()"><span>6초</span></label>
+            <label><input type="radio" name="sec" value="7" onchange="getRank()"><span>7초</span></label>
+            <label><input type="radio" name="sec" value="8" onchange="getRank()"><span>8초</span></label>
+            <label><input type="radio" name="sec" value="9" onchange="getRank()"><span>9초</span></label>
+            <label><input type="radio" name="sec" value="10" onchange="getRank()"><span>10초</span></label>
+        </div>
+        <p id="info" class="info">
             <span class="info_content">
                 오차를 기준으로 순위를 정하지만<br>
                 같은 오차의 경우 시간초를 기준으로 합니다.
@@ -80,11 +107,20 @@
 
         const userInfo = commonJs.userInfo();
 
-        getTimerRank();
+        function getRank(){
+            const value = qs('#radios input:checked').value;
+            if(value == 0) qs('#info').classList.remove('hidden');
+            else qs('#info').classList.add('hidden');
 
-        function getTimerRank(){
+            getTimerRank(value);
+        }
+
+        getRank();
+
+        function getTimerRank(sec){
             ajaxPost({
-                url:'https://wondaero.gabia.io/getTimerRank',
+                url:'https://wondaero.gabia.io/getTimerRank' + (sec != 0 ? 'BySec' : ''),
+                data: {sec: sec},
                 success: function(res){
                     const userList = qs('#userList');
                     userList.innerHTML = '';
@@ -105,7 +141,7 @@
                                     <span class="stop-sec">${user.stop_time}초</span>
                                 </div>
                                 <div class="diff-sec">
-                                    <span class="diff-title">오차:</span> <span class="diff-value">${user.diff_time}초</span>
+                                    <span class="diff-title">오차:</span> <span class="diff-value">${user.diff_time == 0 ? '없음' : user.diff_time + '초'}</span>
                                 </div>
                             </div>
                         `;
