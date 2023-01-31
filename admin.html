@@ -93,11 +93,24 @@
     <script>
       const userInfo = commonJs.userInfo();
 
+      ajaxPost({
+        url:'https://wondaero.gabia.io/isAdmin',
+        data: {id: userInfo.id},
+        success: function(res){
+            const res2 = JSON.parse(res);
+            if(res2[0].cnt != 1){
+              alert('잘못된 접근입니다.');
+              window.location.href = 'login.html';
+            }
+        }
+      });
+
       if(!commonJs.isAccess()){
         alert('잘못된 접근입니다.');
         window.location.href = 'login.html';
       }
 
+      
 
       const date = new Date();
       
