@@ -43,6 +43,7 @@ const commonJs = {
 
 const qs = target => document.querySelector(target);
 const qsa = target => document.querySelectorAll(target);
+const round = (num, digit) => Math.round(num * (10**digit)) / (10**digit);
 
 const getRandomNum = (mn, mx) => Math.floor(Math.random() * (mx - mn + 1)) + mn;
 

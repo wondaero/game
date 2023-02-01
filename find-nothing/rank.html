@@ -36,7 +36,6 @@
     .thumbnail{border-radius: 8px; margin-right: 5px;}
     .nick{font-weight: 600; margin-bottom: 10px;}
     .rec{font-weight: 600; margin-bottom: 5px;}
-    .sec{width: 80px; display: inline-block;}
     .sec > span{background: linear-gradient(transparent, 50%, #0ff 0); padding: 0 5px;}
     .miss > span{background: linear-gradient(transparent, 50%, #f00 0); padding: 0 5px;}
 
@@ -90,9 +89,11 @@
                                 <div class="nick txt-overflow1">${userInfo.id == user.id ? user.kakao_nick : 'user' + (idx + 1)}</div>
                                 <div class="rec">
                                     <span class="sec"><span>${user.rec}초</span></span>
-                                    <span class="miss">${user.miss != 0 ? ('<span>miss: ' + user.miss + '</span>') : ''}</span>
                                 </div>
-                                <div class="history">${user.history}</div>
+                                <div class="history">
+                                    <span>${user.history}<span>
+                                    <span class="miss">${user.miss == 0 ? ('<span>miss: ' + user.miss + '</span>') : ''}</span>
+                                </div>
                             </div>
                         `;
 

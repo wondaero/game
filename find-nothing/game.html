@@ -139,7 +139,7 @@
                 
                 const endTime = new Date().getTime();
                 const dur = ((endTime - t.startTime) / 1000);
-                const dur2 = dur + (t.missCnt ? 2**t.missCnt : 0);
+                const dur2 = round((dur + (t.missCnt ? 2**t.missCnt : 0)), 3);
                 // t.isGameOver = true;
 
                 const userInfo = commonJs.userInfo();
@@ -154,16 +154,15 @@
                     },
                     success: function(res){
                         const res2 = JSON.parse(res);
-                        console.log(res2);
+                        board.innerHTML = '<span>' + dur2 + '초</span>';
+                        if(t.missCnt) board.innerHTML += '<br/><span>miss: ' + t.missCnt + '회</span>';
+                        board.innerHTML += '<div class="btn-wrapper"><a href="./rank.html" class="btn-rank" />랭킹</div>';
                     },
                     error: function(){
                         alert('관리자에게 문의하세요.');
                     }
                 });
 
-                board.innerHTML = '<span>' + dur2 + '초</span>';
-                if(t.missCnt) board.innerHTML += '<br/><span>miss: ' + t.missCnt + '회</span>';
-                board.innerHTML += '<div class="btn-wrapper"><a href="./rank.html" class="btn-rank" />랭킹</div>';
             }
             
             t.submit = function(num){
