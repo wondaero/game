@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>허전랭킹</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../assets/css/normalize.css">
+    <link rel="stylesheet" href="../assets/css/layout.css" />
+</head>
+<style>
+    header{
+        display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; padding: 10px;
+        background: lightPink; position: fixed; top: 0; left: 0; right: 0;
+    }
+    .title{margin: 0; padding: 0; font-size: 30px; color: #000;}
+    /* header{
+        padding: 10px; background: gold; position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center;
+        justify-content: space-between; z-index: 1;
+    }
+    .title{color: #333; margin: 0; font-size: 25px;} */
+    .btn-home{
+        outline: 0; border: 0; border-radius: 3px; width: 60px; padding: 5px; box-sizing: border-box; color: #eef; font-weight: 900;
+        display: inline-flex; align-items: center; justify-content: center; text-decoration: none; background: #333;
+    }
+
+    .user-list{list-style: none; padding: 0; width: 100%; margin: 55px 0 100px;}
+    .user-list li{border-bottom: 1px solid #eee; padding: 10px 5px; display: flex; align-items: center;}
+    .user-list li.me{background: #ccc;}
+
+    .game-info{width: 0; flex: 1;}
+    .places{width: 50px; text-align: center; margin-right: 5px; font-weight: 900;}
+    .place1{font-size: 30px; background: linear-gradient(transparent 50%, gold 0);}
+    .place2{font-size: 24px; background: linear-gradient(transparent 50%, silver 0);}
+    .place3{font-size: 20px; background: linear-gradient(transparent 50%, #ab5959 0);}
+
+    .thumbnail{border-radius: 8px; margin-right: 5px;}
+    .nick{font-weight: 600; margin-bottom: 10px;}
+    .rec{font-weight: 600; margin-bottom: 5px;}
+    .sec{width: 80px; display: inline-block;}
+    .sec > span{background: linear-gradient(transparent, 50%, #0ff 0); padding: 0 5px;}
+    .miss > span{background: linear-gradient(transparent, 50%, #f00 0); padding: 0 5px;}
+
+    .quick-start{
+        position: fixed; bottom: 10px; right: 10px; width: 80px; height: 80px; border-radius: 50%; background: #777;
+        display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px;
+        box-shadow: 0 0 5px #777; text-decoration: none;
+    }
+
+</style>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1 class="title">허전랭킹</h1>
+            <a href="./index.html" class="btn-home">홈</a>
+        </header>
+        <ul id="userList" class="user-list"></ul>
+        <a href="game.html" class="quick-start" id="quickStart">바로시작</a>
+
+    </div>
+
+    <script src="../assets/js/common.js"></script>
+    <script>
+        if(!commonJs.isAccess()){
+            alert('잘못된 접근입니다.');
+            window.location.href = '../login.html';
+        }
+
+        const userInfo = commonJs.userInfo();
+
+
+        getFindNothingRank();
+
+        function getFindNothingRank(){
+            ajaxPost({
+                url:'https://wondaero.gabia.io/getFindNothingRank',
+                success: function(res){
+                    const res2 = JSON.parse(res);
+                    const userList = qs('#userList');
+                    userList.innerHTML = '';
+
+                    if(!res2.length) userList.innerHTML = '<li>아직 아무도 없습니다.</li>';
+
+                    res2.forEach(function(user, idx){
+                        const li = document.createElement('li');
+
+                        const html = `
+                            <div class="places place${idx + 1}">${idx + 1}등</div>
+                            <img class="thumbnail" src="${user.kakao_thumbnail}"  width="50" />
+                            <div class="game-info">
+                                <div class="nick txt-overflow1">${userInfo.id == user.id ? user.kakao_nick : 'user' + (idx + 1)}</div>
+                                <div class="rec">
+                                    <span class="sec"><span>${user.rec}초</span></span>
+                                    <span class="miss">${user.miss != 0 ? ('<span>miss: ' + user.miss + '</span>') : ''}</span>
+                                </div>
+                                <div class="history">${user.history}</div>
+                            </div>
+                        `;
+
+                        if(userInfo.id == user.id){
+                            li.classList.add('me');
+                        }
+
+                        li.innerHTML = html;
+
+                        userList.appendChild(li);
+                    })
+                },
+                error: function(){
+                    alert('관리자에게 문의하세요.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

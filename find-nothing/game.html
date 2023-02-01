@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>허전</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="../assets/css/normalize.css">
+</head>
+<style>
+    html, body{background: #000; color: #fff;}
+    header{
+        display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; padding: 10px;
+        background: lightPink; margin-bottom: 10px;
+    }
+    .logo{margin: 0; padding: 0; font-size: 30px; color: #000;}
+    header button, header a{
+        border: 0; outline: 0; background: antiquewhite; color: #333; padding: 10px 20px; border-radius: 5px; font-weight: 900;
+    }
+    
+    header a{display: inline-block; text-decoration: none; background: rebeccapurple; color: #fff;}
+
+    .guide{margin: 0; padding: 0 10px;}
+    .stage{font-size: 25px; margin-bottom: 10px;}
+    .board{font-size: 50px; text-align: center;}
+    .rdm-num{
+        background: linear-gradient(#fff, transparent); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .board.result{font-size: 25px;}
+
+    .btn-wrapper{margin-top: 15px;}
+    .btn-rank{
+        text-decoration: none; color: #ffe; background: #777; border-radius: 8px; display: inline-flex;
+        justify-content: center; align-items: center; width: 80px; padding: 10px;
+    }
+
+    footer{
+        position: fixed; bottom: 0; left: 0; right: 0; background: #eee; display: flex; align-items: center; justify-content: center;
+        box-sizing: border-box; padding: 10px;
+    }
+    
+    .keypad{width: 240px; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; position: relative;}
+    .keypad > div{
+        width: 70px; margin-right: 15px; display: flex; align-items: center; justify-content: center; box-sizing:border-box; padding: 15px 20px;
+        font-weight: 900; background: #fff; margin-bottom: 15px; color: #000;
+    }
+    .keypad > div:hover{background: gold;}
+    .keypad > div:nth-child(3n){margin-right: 0;}
+    .keypad > div:nth-child(n + 10){margin-bottom: 0;}
+
+    .keypad.wrong{animation: wrong .2s alternate;}
+
+    @keyframes wrong{25%{left: 5px;} 50%{left: -5px;} 70%{left: 5px;} 100%{left: -5px;}}
+</style>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1 class="logo">허전</h1>
+            <div>
+                <a href="index.html">홈</a>
+                <button onclick="game.start();">시작</button>
+            </div>
+        </header>
+            <div id="guide" class="guide">시작버튼을 눌러주세요.</div>
+            <div id="board" class="board"></div>
+            <footer>
+                <div id="keypad" class="keypad">
+                    <div onclick="game.submit(1);">1</div>
+                    <div onclick="game.submit(2);">2</div>
+                    <div onclick="game.submit(3);">3</div>
+                    <div onclick="game.submit(4);">4</div>
+                    <div onclick="game.submit(5);">5</div>
+                    <div onclick="game.submit(6);">6</div>
+                    <div onclick="game.submit(7);">7</div>
+                    <div onclick="game.submit(8);">8</div>
+                    <div onclick="game.submit(9);">9</div>
+                    <div>-</div>
+                    <div onclick="game.submit(0);">0</div>
+                    <div>-</div>
+                </div>
+            </footer>
+    </div>
+
+    <script src="../assets/js/common.js"></script>
+    <script>
+
+        if(!commonJs.isAccess()){
+            alert('잘못된 접근입니다.');
+            window.location.href = '../login.html';
+        }
+
+        const numArr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        const board = qs('#board');
+        const guide = qs('#guide');
+        const keypad = qs('#keypad');
+
+        const shuffle = arr => arr.sort(() => Math.random() - 0.5);
+        
+        const game = new GuessEmpty();
+
+        function GuessEmpty(){
+            const t = this;
+
+            t.init = function(first){
+                if(first) guide.innerText = '시작버튼을 눌러주세요.';
+                t.isStart = false;
+                // t.isGameOver = false;
+                t.startTime;
+                board.innerText = '';
+                t.stage = 1;
+                t.lastStage = 5;
+                t.missCnt = 0;
+
+                t.history = [];
+                board.classList.remove('result');
+            }
+            
+            t.init(true);
+
+            t.start = function(){
+                if(t.isStart == true) return;
+
+                t.init();
+                t.isStart = true;
+                t.startTime = new Date().getTime();
+                t.settingNum();
+            }
+            
+            t.gameOver = function(fail){
+
+                console.log(t.history);
+                t.isStart = false;
+                guide.innerText = 'GAME OVER';
+                board.classList.add('result');
+                
+                if(fail){
+                    board.innerHTML = '<span>그만 틀려...</span>';
+                    return;
+                }
+                
+                const endTime = new Date().getTime();
+                const dur = ((endTime - t.startTime) / 1000);
+                const dur2 = dur + (t.missCnt ? 2**t.missCnt : 0);
+                // t.isGameOver = true;
+
+                const userInfo = commonJs.userInfo();
+
+                ajaxPost({
+                    url:'https://wondaero.gabia.io/addFindNothingDate',
+                    data: {
+                        id: userInfo.id,
+                        rec: dur2,
+                        miss: t.missCnt,
+                        history: t.history.join(', ')
+                    },
+                    success: function(res){
+                        const res2 = JSON.parse(res);
+                        console.log(res2);
+                    },
+                    error: function(){
+                        alert('관리자에게 문의하세요.');
+                    }
+                });
+
+                board.innerHTML = '<span>' + dur2 + '초</span>';
+                if(t.missCnt) board.innerHTML += '<br/><span>miss: ' + t.missCnt + '회</span>';
+                board.innerHTML += '<div class="btn-wrapper"><a href="./rank.html" class="btn-rank" />랭킹</div>';
+            }
+            
+            t.submit = function(num){
+                if(!t.isStart){
+                    alert('시작버튼을 눌러주세요.');
+                    return;
+                }
+
+                if(num == t.hiddenNum){
+                    t.history.push(num);
+                    if(t.stage == t.lastStage){
+                        t.gameOver();
+                        return;
+                    }
+                    t.stage++;
+                    t.settingNum();
+                }else{
+                    if(t.missCnt == 10){
+                        t.gameOver(true);
+                        return;
+                    }
+                    
+                    t.missCnt++;
+                    keypad.classList.add('wrong');
+                    keypad.addEventListener('animationend', function(){
+                        this.classList.remove('wrong');
+                    })
+                }
+            }
+            
+            t.settingNum = function(){
+                t.rdmArr = shuffle(JSON.parse(JSON.stringify(numArr)));
+                t.hiddenNum = t.rdmArr.splice(-1, 1)[0];
+
+                guide.innerHTML = `<div class="stage">step.${t.stage}</div>
+                <div>0~9 중 없는 숫자는?<br>(틀리면 추가시간 부여)</div>`;
+
+                board.innerHTML = '<div class="rdm-num">' + t.rdmArr.join('') + '</div>';
+            }
+        }
+    </script>
+
+
+
+</body>
+</html>
