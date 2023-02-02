@@ -53,7 +53,6 @@
             <a href="./index.html" class="btn-home">홈</a>
         </header>
         <ul id="userList" class="user-list">
-            <li>준비중입니다.</li>
         </ul>
         <a href="game.html" class="quick-start" id="quickStart">바로시작</a>
 
@@ -69,7 +68,7 @@
         const userInfo = commonJs.userInfo();
 
 
-        // getFindNothingRank();
+        getFindNothingRank();
 
         function getFindNothingRank(){
             ajaxPost({
@@ -94,7 +93,7 @@
                                 </div>
                                 <div class="history">
                                     <span>${user.history}<span>
-                                    <span class="miss">${user.miss == 0 ? ('<span>miss: ' + user.miss + '</span>') : ''}</span>
+                                    <span class="miss">${user.miss != 0 ? ('<span>miss: ' + user.miss + '</span>') : ''}</span>
                                 </div>
                             </div>
                         `;
