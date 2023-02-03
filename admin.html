@@ -13,8 +13,6 @@
       .content-wrapper{padding: 10px; box-sizing: border-box;}
     
       fieldset{border-radius: 8px; background: #eee; border: 0; padding: 10px; margin: 0; border-top: 1px solid #ccc; margin-bottom: 20px;}
-      fieldset legend{display: flex; width: 100%; justify-content: space-between; align-items: center;}
-      fieldset legend button{outline: 0; border: 0; background: #ace; padding: 5px 10px; border-radius: 8px;}
       fieldset > div{display: flex; align-items: center;}
       .today-wrapper{margin-bottom: 10px;}
       fieldset > div input[type="radio"]{margin-right: 10px; width: 20px; height: 20px;}
@@ -22,10 +20,9 @@
       .from-to-box span{display: inline-block; width: 40px;}
       .user-cnt, .play-cnt{font-size: 30px; color: #f00; margin-top: 10px; border-top: 1px solid #000;justify-content: flex-end;}
 
-      ul, ol{border-top: 1px solid #000; margin: 10px 0; padding-top: 10px;}
       ul li, ol li{margin-bottom: 5px;}
-      ul li input, ol li input{margin-right: 10px;}
       ul li:last-child ol, li:last-child{margin-bottom: 0;}
+      .graph{color: #fff; font-weight: 900;}
 
     </style>
   </head>
@@ -35,8 +32,8 @@
         <h2>ADMIN PAGE</h2>
       </header>
       <div class="content-wrapper">
-        <fieldset id="user">
-          <legend><span>가입유저</span><button onclick="getUserCnt();">검색</button></legend>
+        <!-- <fieldset id="user">
+          <legend>가입유저</legend>
           <div class="today-wrapper">
             <input type="radio" name="user_period" value="today" onchange="changeData(this);" checked />
             <div>
@@ -57,35 +54,10 @@
             </div>
           </div>
           <div id="userCnt" class="user-cnt">0</div>
-        </fieldset>
+        </fieldset> -->
         <fieldset id="game">
-          <legend><span>게임횟수</span><button onclick="getGameCnt();">검색</button></legend>
-          <div class="today-wrapper">
-            <input type="radio" name="game_period" value="today" onchange="changeData(this);"  checked />
-            <div>
-              <div class="today">Today</div>
-            </div>
-          </div>
-          <div class="from-to-box-wrapper">
-            <input type="radio" name="game_period" value="fromTo" onchange="changeData(this);" />
-            <div>
-              <div class="from-to-box from-box">
-                <span>from</span>
-                <input type="date" name="game_from" data-id="period" onchange="changeData(this, 'game');" />
-              </div>
-              <div class="from-to-box to-box">
-                <span>to</span>
-                <input type="date" name="game_to" data-id="period" onchange="changeData(this, 'game');" />
-              </div>
-            </div>
-          </div>
-          <ul class="game-list">
-            <li><label><input type="radio" name="games" value="color_light" onchange="changeData(this);" checked /><b>이색게임(라이트)</b></label></li>
-            <li><label><input type="radio" name="games" value="color_dark" onchange="changeData(this);" /><b>이색게임(다크)</b></label></li>
-            <li><label><input type="radio" name="games" value="timer" onchange="changeData(this);" /><b>이쯤</b></label></li>
-          </ul>
-          <div id="playCnt" class="play-cnt">0</div>
-          <!-- <ol id="userList" class="user-list"></ol> -->
+          <legend>게임횟수</legend>
+          <ol id="gameList" class="game-list"></ol>
         </fieldset>
       </div>
     </div>
@@ -116,85 +88,60 @@
         window.location.href = 'login.html';
       }
 
-      
-
       const date = new Date();
       
       qsa('[data-id="period"]').forEach(function(input){
         input.value = date.toISOString().substring(0, 10);
       })
 
-      getUserCnt();
       getGameCnt();
 
       // getUserList();
 
-      function getUserList(){
-        const userList = qs('#userList');
-        ajaxPost({
-          url:'https://wondaero.gabia.io/getUserList',
-          data: {id: userInfo.id},
-          success: function(res){
-              const res2 = JSON.parse(res);
+      // function getUserList(){
+      //   const userList = qs('#userList');
+      //   ajaxPost({
+      //     url:'https://wondaero.gabia.io/getUserList',
+      //     data: {id: userInfo.id},
+      //     success: function(res){
+      //         const res2 = JSON.parse(res);
 
-              res2.forEach(function(user){
-                const li = document.createElement('li');
-                const userTemplate = `<label><input type="checkbox" name="users" value="${user.kakao_id}" checked><b>${user.kakao_nick}</b></label>`;
-                li.innerHTML = userTemplate;
-                userList.appendChild(li);
-              })
-          }
-        });
-      }
+      //         res2.forEach(function(user){
+      //           const li = document.createElement('li');
+      //           const userTemplate = `<label><input type="checkbox" name="users" value="${user.kakao_id}" checked><b>${user.kakao_nick}</b></label>`;
+      //           li.innerHTML = userTemplate;
+      //           userList.appendChild(li);
+      //         })
+      //     }
+      //   });
+      // }
 
-      function getUserCnt(){
-        ajaxPost({
-          url:'https://wondaero.gabia.io/getUserCnt',
-          data: {
-            type: qs('[name="user_period"]:checked').value,
-            from: qs('[name="user_from"]').value,
-            to: qs('[name="user_to"]').value
-          },
-          success: function(res){
-              const res2 = JSON.parse(res);
-              qs('#userCnt').innerHTML = res2[0].cnt;
-          }
-        });
-      }
 
       function getGameCnt(){
-        const param = {
-          type: qs('[name="game_period"]:checked').value,
-          from: qs('[name="game_from"]').value,
-          to: qs('[name="game_to"]').value,
-          game: qs('[name="games"]:checked').value,
-          users: []
-        };
-
-        qsa('[name="users"]:checked').forEach(function(input){
-          param.users.push(input.value);
-        })
-
         ajaxPost({
           url:'https://wondaero.gabia.io/getPlayCnt',
-          data: param,
           success: function(res){
               const res2 = JSON.parse(res);
-              qs('#playCnt').innerHTML = res2[0].cnt;
+              console.log(res2);
+
+              let total = 0;
+              res2.forEach(function(game){
+                const li = document.createElement('li');
+                li.innerHTML = `<div>${game.name}</div><div class="graph" data-cnt="${game.cnt}">${game.cnt}</div>`;
+                qs('#gameList').append(li);
+                total += game.cnt;
+              });
+
+              qsa('#gameList li').forEach(function(li){
+                const target = li.querySelector('[data-cnt]');
+                const cnt = target.dataset.cnt;
+                target.style.background = `linear-gradient(to right, red ${(cnt / total * 100)}%, #faa 0)`;
+              })
+
+
           }
         });
       }
-
-      function changeData(target, option){
-        const dataId = target.dataset.id;
-        if(dataId == 'period') qs('[name="' + option + '_period"][value="fromTo"]').checked = true;
-
-        target.closest('#user') ? getUserCnt() : getGameCnt();
-      }
-
-
-
-
 
     </script>
   </body>
