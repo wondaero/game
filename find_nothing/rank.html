@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>양자택일랭킹</title>
+    <title>허전랭킹</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="../assets/css/normalize.css">
     <link rel="stylesheet" href="../assets/css/layout.css" />
@@ -10,12 +10,17 @@
 <style>
     header{
         display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; padding: 10px;
-        background: #333; color: #fff; position: fixed; top: 0; left: 0; right: 0;
+        background: lightPink; position: fixed; top: 0; left: 0; right: 0;
     }
-    .title{margin: 0; padding: 0; font-size: 30px;}
+    .title{margin: 0; padding: 0; font-size: 30px; color: #000;}
+    /* header{
+        padding: 10px; background: gold; position: fixed; top: 0; left: 0; right: 0; display: flex; align-items: center;
+        justify-content: space-between; z-index: 1;
+    }
+    .title{color: #333; margin: 0; font-size: 25px;} */
     .btn-home{
         outline: 0; border: 0; border-radius: 3px; width: 60px; padding: 5px; box-sizing: border-box; color: #eef; font-weight: 900;
-        display: inline-flex; align-items: center; justify-content: center; text-decoration: none; background: green;
+        display: inline-flex; align-items: center; justify-content: center; text-decoration: none; background: #333;
     }
 
     .user-list{list-style: none; padding: 0; width: 100%; margin: 55px 0 100px;}
@@ -30,9 +35,9 @@
 
     .thumbnail{border-radius: 8px; margin-right: 5px;}
     .nick{font-weight: 600; margin-bottom: 10px;}
-    .stage{font-weight: 600; margin-bottom: 5px;}
-    .stage > span{background: linear-gradient(transparent, 50%, #0ff 0); padding: 0 5px;}
-    .per > span{background: linear-gradient(transparent, 50%, #ff0 0); padding: 0 5px; font-weight: 900;}
+    .rec{font-weight: 600; margin-bottom: 5px;}
+    .sec > span{background: linear-gradient(transparent, 50%, #0ff 0); padding: 0 5px;}
+    .miss > span{background: linear-gradient(transparent, 50%, #f00 0); padding: 0 5px;}
 
     .quick-start{
         position: fixed; bottom: 10px; right: 10px; width: 80px; height: 80px; border-radius: 50%; background: #777;
@@ -44,11 +49,10 @@
 <body>
     <div class="wrapper">
         <header>
-            <h1 class="title">양자택일랭킹</h1>
-            <a href="./index.html" class="btn-home">홈</a>
+            <h1 class="title">허전랭킹</h1>
+            <a href="../gameList.html" class="btn-home">홈</a>
         </header>
         <ul id="userList" class="user-list">
-            <li>준비 중입니다.</li>
         </ul>
         <a href="game.html" class="quick-start" id="quickStart">바로시작</a>
 
@@ -64,11 +68,11 @@
         const userInfo = commonJs.userInfo();
 
 
-        getGoodLuckRank();
+        getFindNothingRank();
 
-        function getGoodLuckRank(){
+        function getFindNothingRank(){
             ajaxPost({
-                url:'https://wondaero.gabia.io/getGoodLuckRank',
+                url:'https://wondaero.gabia.io/getFindNothingRank',
                 success: function(res){
                     const res2 = JSON.parse(res);
                     const userList = qs('#userList');
@@ -84,11 +88,12 @@
                             <img class="thumbnail" src="${user.kakao_thumbnail}"  width="50" />
                             <div class="game-info">
                                 <div class="nick txt-overflow1">${userInfo.id == user.id ? user.kakao_nick : 'user' + (idx + 1)}</div>
-                                <div class="stage">
-                                    <span><span>Stage. ${user.stage}</span></span>
+                                <div class="rec">
+                                    <span class="sec"><span>${user.rec}초</span></span>
                                 </div>
-                                <div class="per">
-                                    <span>${user.per}%<span>
+                                <div class="history">
+                                    <span>${user.history}<span>
+                                    <span class="miss">${user.miss != 0 ? ('<span>miss: ' + user.miss + '</span>') : ''}</span>
                                 </div>
                             </div>
                         `;

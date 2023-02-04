@@ -36,7 +36,7 @@
         <header>
             <h1>양자택일</h1>
             <div>
-                <a href="index.html">홈</a>
+                <a href="../gameList.html">홈</a>
                 <button onclick="luck.startGame();">시작</button>
             </div>
         </header>
@@ -53,6 +53,8 @@
         </div>
         <script src="../assets/js/common.js"></script>
         <script>
+            commonJs.stopDevToll();
+
             const perTag = qs('#percent');
             const stageTag = qs('#stage');
             const guide = qs('#guide');

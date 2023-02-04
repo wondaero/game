@@ -3,7 +3,7 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>게임리스트</title>
+    <title>로게임즈</title>
     <link rel="stylesheet" href="./assets/css/normalize.css" />
     <link rel="stylesheet" href="./assets/css/layout.css" />
 
@@ -18,7 +18,7 @@
       .thumbnail img{vertical-align: top; border-radius: 8px;}
       .nickname{padding: 0 10px; flex: 1; box-sizing: border-box;}
       header{background: #decade; padding: 10px; display: flex; align-items: center; justify-content: space-between;}
-      header h2{margin: 0;}
+      header h1{margin: 0; display: flex; align-items: center;}
       header a{
         display: inline-block; border: 0; outline: 0; padding: 5px 10px; background: pink; box-shadow: 0 0 5px rgba(0, 0, 0, .5);
         text-decoration: none; color: #333;
@@ -33,11 +33,12 @@
         border-bottom: 1px dashed rgba(0, 0, 0, .1)
       }
       ul.game-list li:hover{background: radial-gradient(rgba(255, 255, 255, .8), transparent);}
+      ul.game-list .btns{display: flex; flex-direction: column; align-items: center;}
       ul.game-list a{
         text-decoration: 0; color: #000; margin: 0; padding: 5px; border: 0; outline: 0;
-        background: #fff; border-radius: 8px; width: 60px; display: inline-block; text-align: center;
+        background: #fff; width: 60px; display: inline-block; text-align: center;
       }
-      ul.game-list .btns{display: flex; flex-direction: column; align-items: cener;}
+      ul.game-list .btns a:first-child{margin-bottom: 10px;}
       ul.game-list li button:last-child{margin-bottom: 0;}
 
       .new, .play-cnt{background: #f00; color: #fff; padding: 0 5px; border-radius: 3px; margin-left: 5px;}
@@ -47,7 +48,7 @@
   </head>
   <body>
     <div>
-      <header><h2>R. Temp. Game</h2></header>
+      <header><h1><img src="./assets/img/rogo.svg" height="50" />로게임즈</h1></header>
       <div class="game-list">
         <div id="userInfo" class="user-info">
           <div id="thumbnail" class="thumbnail"><img width="50" /></div>
@@ -58,41 +59,14 @@
         </div>
         <fieldset>
           <legend><h2>게임 리스트</h2></legend>
-          <ul class="game-list">
-            <li>
-              <div data-id="color">이색게임</div>
-              <div class="btns">
-                <a href="color/index.html">PLAY</a>
-              </div>
-              </li>
-            <li>
-              <div data-id="timer">이쯤<span class="new none" data-pub="20230128">new</span></div>
-              <div class="btns">
-                <a href="timer/index.html">PLAY</a>
-              </div>
-              </li>
-            </li>
-            <li>
-              <div data-id="find-nothing">허전<span class="new" data-pub="20230202">new</span></div>
-              <div class="btns">
-                <a href="find-nothing/index.html">PLAY</a>
-              </div>
-              </li>
-            </li>
-            <li>
-              <div data-id="good-luck">양자택일<span class="new" data-pub="20230203">new</span></div>
-              <div class="btns">
-                <a href="good-luck/index.html">PLAY</a>
-              </div>
-              </li>
-            </li>
-          </ul>
+          <ul id="gameList" class="game-list"></ul>
         </fieldset>
       </div>
     </div>
     <script src="./assets/js/common.js"></script>
     <script>
       const userInfo = commonJs.userInfo();
+      const gameList = qs('#gameList');
 
       if(!commonJs.isAccess()){
         alert('잘못된 접근입니다.');
@@ -100,6 +74,7 @@
       }
 
       setAdminBtn();
+      getGameList();
 
       function setAdminBtn(){
         ajaxPost({
@@ -111,6 +86,46 @@
                 const cnt = '<a href="admin.html">ADMIN</a>';
                 qs('header').innerHTML += cnt;
               }
+          }
+        });
+      }
+
+      function getGameList(){
+        ajaxPost({
+          url:'https://wondaero.gabia.io/getGameList',
+          data: {id: userInfo.id},
+          success: function(res){
+              const res2 = JSON.parse(res);
+
+              console.log(res2);
+
+              gameList.innerHTML = '';
+
+              const today = new Date().toLocaleDateString();
+
+            
+              res2.forEach(function(game){
+                const li = document.createElement('li');
+
+                const dir = game.game_code == 100 || game.game_code == 101 ? 'color' : game.game_name;
+                const queryString = game.game_code == 100 ? '?mode=light&ver=1' : game.game_code == 101 ? '?mode=dark&ver=1' : '';
+
+                const relaseDt = new Date(game.release_dt);
+                const d = relaseDt.getDate();
+                const after7d = new Date(relaseDt.setDate(d + 7)).toLocaleDateString();
+
+                const diffDate = new Date(today) - new Date(after7d);
+
+                li.innerHTML = `
+                  <div data-id="${game.game_name}">${game.game_name2}<span class="${diffDate >= 0 ? 'none ' : ''}new">new</span></div>
+                  <div class="btns">
+                    <a href="${dir}/game.html${queryString}">PLAY</a>
+                    <a href="${dir}/rank.html${queryString}">랭킹</a>
+                  </div>
+                `;
+
+                gameList.appendChild(li);
+              })
           }
         });
       }

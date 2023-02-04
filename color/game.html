@@ -37,8 +37,10 @@
     }
     .toggle1 input:checked + span{width: 100%;}
     
-    header button{outline: 0; border: 0; border-radius: 3px; width: 60px; padding: 5px; box-sizing: border-box; color: #fff; font-weight: 900;}
-    header button{display: inline-flex; align-items: center; justify-content: center;}
+    header button, header a{
+        display: inline-flex; align-items: center; justify-content: center; text-decoration: none;
+        outline: 0; border: 0; border-radius: 3px; width: 60px; padding: 5px; box-sizing: border-box; color: #fff; font-weight: 900;
+    }
     .home{background: #b4d491; color: #333;}
     .start{background: #d5e5f4; color: #333;}
 
@@ -102,7 +104,7 @@
                 <span></span>
             </label>
             <div>
-                <button class="home" onclick="colorGame.goHome();">홈</button>
+                <a href="../gameList.html" class="home">홈</a>
                 <button class="start" onclick="colorGame.startGame();">시작</button>
             </div>
         </header>
@@ -180,7 +182,7 @@
 
         if(!isValidPage(qryObj)){
             alert('잘못된 접근입니다.');
-            location.href = './index.html';
+            location.href = '../gameList.html';
         }
 
         
@@ -370,10 +372,6 @@
                 t.otherColorIdx = t.quizIdx = 0;
                 t.r = t.g = t.b = '';
                 t.history = [];
-            }
-
-            t.goHome = function(){
-                if(confirm('초기화면으로 돌아갈까요?')) location.href = './index.html';
             }
         }
 
