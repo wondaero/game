@@ -79,7 +79,8 @@
     .place2{font-size: 24px; background: linear-gradient(transparent 50%, silver 0);}
     .place3{font-size: 20px; background: linear-gradient(transparent 50%, #ab5959 0);}
 
-    .thumbnail{border-radius: 8px; margin-right: 5px;}
+    .thumbnail{border-radius: 8px; margin-right: 8px; background: #fff; border: 1px solid #777;}
+    .thumbnail img{border-radius: 8px; transform: rotate(-5deg); vertical-align: top; position: relative; top: 3px; left: 3px;}
     .nick{font-weight: 600; margin-bottom: 10px;}
     .rec{font-weight: 600;}
     .stage{width: 70px; display: inline-block;}
@@ -209,8 +210,7 @@
                     const userList = qs('#userList');
                     userList.innerHTML = '';
                     const res2 = JSON.parse(res);
-
-
+                    
                     if(!res2.length) userList.innerHTML = '<li>아직 아무도 없습니다.</li>';
 
 
@@ -219,7 +219,7 @@
 
                         const html = `
                             <div class="places">${idx + 1 < 4 ? '<img src="../assets/img/rank' + (idx + 1) + '.svg" />' : (idx + 1 + '등')}</div>
-                            <img class="thumbnail" src="${user.kakao_thumbnail}"  width="50" />
+                            <div class="thumbnail"><img src="${user.kakao_thumbnail}"  width="50" /></div>
                             <div class="game-info">
                                 <div class="nick txt-overflow1">${userInfo.id == user.id ? user.kakao_nick : 'user' + (idx + 1)}</div>
                                 <div class="rec">
