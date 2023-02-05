@@ -80,7 +80,7 @@
                         const li = document.createElement('li');
 
                         const html = `
-                            <div class="places place${idx + 1}">${idx + 1}등</div>
+                            <div class="places">${idx + 1 < 4 ? '<img src="../assets/img/rank' + (idx + 1) + '.svg" />' : (idx + 1 + '등')}</div>
                             <img class="thumbnail" src="${user.kakao_thumbnail}"  width="50" />
                             <div class="game-info">
                                 <div class="nick txt-overflow1">${userInfo.id == user.id ? user.kakao_nick : 'user' + (idx + 1)}</div>
