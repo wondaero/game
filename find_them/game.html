@@ -18,10 +18,10 @@
     }
     .start{background: darkgreen;}
 
-    .guide{margin: 0 0 10px; padding: 0 10px; height: 56px;}
+    .guide{margin: 0 0 10px; padding: 0; height: 56px;}
     .guide strong{background: linear-gradient(transparent 50%, #f00 0)}
 
-    .montage{position: relative; display: flex; padding: 0 10px; height: 50px; margin-bottom: 10px;}
+    .montage{position: relative; display: flex; padding: 0 3px; height: 50px; margin-bottom: 10px;}
     .montage > div{box-sizing: border-box;}
 
     .content-wrapper{padding: 0 10px; width: 270px; margin: 0 auto;}
@@ -166,7 +166,7 @@
 
     <script src="../assets/js/common.js"></script>
     <script>
-        commonJs.stopDevToll();
+        // commonJs.stopDevToll();
         if(!commonJs.isAccess()){
             alert('잘못된 접근입니다.');
             window.location.href = '../login.html';
